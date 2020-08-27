@@ -4,12 +4,54 @@
     tools:showIn="navigation_view">
 
     <group
-        android:id="@+id/menuModulos"
+        android:id="@+id/menu"
         android:checkableBehavior="none">
         <item
-            android:id="@+id/nav_home"
+            android:id="@+id/nav_anuncio"
+            android:checked="true"
+            android:icon="@drawable/ic_baseline_add_24"
+            android:title="@string/inserir_anuncio" />
+
+        <item
+            android:id="@+id/nav_chat"
+            android:checked="true"
+            android:icon="@drawable/ic_baseline_chat_bubble_outline_24"
+            android:title="@string/chat" />
+
+        <item
+            android:id="@+id/nav_fav"
+            android:checked="true"
+            android:icon="@drawable/ic_baseline_favorite_24"
+            android:title="@string/favoritos" />
+
+        <item
+            android:id="@+id/nav_notificacao"
+            android:checked="true"
+            android:icon="@drawable/ic_baseline_notifications_active_24"
+            android:title="@string/notificacoes" />
+
+        <item
+            android:id="@+id/nav_conta"
             android:checked="true"
             android:icon="@drawable/ic_baseline_person_24"
-            android:title="teste" />
+            android:title="@string/minha_conta" />
+    </group>
+
+    <group
+        android:id="@+id/doacao"
+        android:checkableBehavior="none">
+
+        <item
+            android:id="@+id/nav_doacao"
+            android:checked="true"
+            android:icon="@drawable/ic_baseline_insert_emoticon_24"
+            android:title="@string/nos_ajude" />
+
+        <item
+            android:id="@+id/nav_rate"
+            android:checked="true"
+            android:icon="@drawable/ic_baseline_star_24"
+            android:title="@string/avalie_google" />
+
     </group>
 </menu>

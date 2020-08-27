@@ -1,10 +1,25 @@
 <resources>
+    <!-- General -->
     <string name="app_name">Me Adote</string>
+
+    <!-- Menu -->
     <string name="navigation_drawer_open" translatable="false">
         Open navigation drawer
     </string>
     <string name="navigation_drawer_close" translatable="false">
         Close navigation drawer
     </string>
+    <string name="inserir_anuncio">Inserir Anúncio</string>
+    <string name="chat">Chat</string>
+    <string name="favoritos">Favoritos</string>
+    <string name="notificacoes">Notificações</string>
+    <string name="minha_conta">Minha Conta</string>
+    <string name="nos_ajude">Nos Ajude</string>
+    <string name="avalie_google">Avalie na Google Play</string>
+    <string name="filtro">Filtro</string>
 
+    <!-- Main -->
+    <string name="entrar">ENTRAR</string>
+    <string name="idade">Idade: </string>
+    <string name="sexo">Sexo: </string>
 </resources>
