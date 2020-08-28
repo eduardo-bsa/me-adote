@@ -8,7 +8,7 @@
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/itFiltro"
-        android:icon="@drawable/filter"
+        android:icon="@drawable/ic_baseline_tune_24"
         android:title="@string/filtro"
         app:showAsAction="ifRoom" />
 </menu>

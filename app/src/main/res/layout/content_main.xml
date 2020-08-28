@@ -9,7 +9,7 @@
     tools:shIn="@layout/MainActivity">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerBooks"
+        android:id="@+id/rvAnuncio"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:listitem="@layout/item_anuncios" />

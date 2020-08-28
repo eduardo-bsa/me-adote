@@ -22,4 +22,5 @@
     <string name="entrar">ENTRAR</string>
     <string name="idade">Idade: </string>
     <string name="sexo">Sexo: </string>
+    <string name="pesquisar">Pesquisar</string>
 </resources>
