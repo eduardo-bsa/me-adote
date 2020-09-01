@@ -2,6 +2,7 @@ package com.example.meadote.presentation.main
 
 import android.app.AlertDialog
 import android.content.Context
+import android.graphics.drawable.Icon
 import android.os.Bundle
 import android.view.*
 import android.view.View.OnFocusChangeListener
@@ -20,6 +21,9 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity :
     AppCompatActivity(),
     NavigationView.OnNavigationItemSelectedListener {
+
+    lateinit var buscaMenu: MenuItem
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -31,10 +35,6 @@ class MainActivity :
 
     override fun onStart() {
         super.onStart()
-        enableSearch()
-    }
-
-    private fun enableSearch() {
         etPesquisa.setOnClickListener { search() }
     }
 
@@ -45,7 +45,13 @@ class MainActivity :
 
         val pesquisa = view.findViewById<EditText>(R.id.etPesquisa)
         val back = view.findViewById<ImageView>(R.id.ivBack)
+        val close = view.findViewById<ImageView>(R.id.ivClose)
 
+        if (etPesquisa.text.toString().isNotEmpty()) {
+            close.visibility = View.VISIBLE
+        }
+
+        pesquisa.setText(etPesquisa.text.toString())
         pesquisa.onFocusChangeListener =
             OnFocusChangeListener { v, hasFocus ->
                 pesquisa.post {
@@ -69,10 +75,23 @@ class MainActivity :
             WindowManager.LayoutParams.WRAP_CONTENT
         )
 
+        close.setOnClickListener {
+            etPesquisa.text = null
+            buscaMenu.setIcon(R.drawable.ic_baseline_search_24)
+            etPesquisa.clearFocus()
+            alert.hide()
+        }
+
         pesquisa.setOnEditorActionListener { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 etPesquisa.setText(pesquisa.text.toString())
                 etPesquisa.clearFocus()
+
+                if (pesquisa.text.toString().isNotEmpty()) {
+                    buscaMenu.setIcon(R.drawable.ic_baseline_close_24)
+                } else {
+                    buscaMenu.setIcon(R.drawable.ic_baseline_search_24)
+                }
 
                 alert.hide()
             }
@@ -80,7 +99,6 @@ class MainActivity :
         }
 
         back.setOnClickListener {
-            etPesquisa.text = null
             etPesquisa.clearFocus()
             alert.hide()
         }
@@ -108,6 +126,9 @@ class MainActivity :
             R.menu.activity_main_toolbar,
             menu
         )
+
+        buscaMenu = menu!!.findItem(R.id.itBusca)
+
         return true
     }
 
@@ -127,6 +148,55 @@ class MainActivity :
         return when (item.itemId) {
             R.id.itBusca -> {
                 search()
+                true
+            }
+            R.id.itFiltro -> {
+                val builder = AlertDialog.Builder(this)
+                val inflater = LayoutInflater.from(this)
+                val view = inflater.inflate(R.layout.dialog_filtro, null)
+
+                /*val pesquisa = view.findViewById<EditText>(R.id.etPesquisa)
+
+                pesquisa.onFocusChangeListener =
+                    OnFocusChangeListener { v, hasFocus ->
+                        pesquisa.post {
+                            val inputMethodManager: InputMethodManager =
+                                this@MainActivity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                            inputMethodManager.showSoftInput(
+                                pesquisa,
+                                InputMethodManager.SHOW_IMPLICIT
+                            )
+                        }
+                    }
+                pesquisa.requestFocus() */
+
+                builder.setView(view)
+
+                val alert = builder.create()
+                alert.show()
+                alert.getWindow()!!.setGravity(Gravity.TOP)
+                alert.getWindow()!!.setBackgroundDrawableResource(R.drawable.bg_filtro_round)
+                alert.getWindow()!!.setLayout(
+                    WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.WRAP_CONTENT
+                )
+
+                /*pesquisa.setOnEditorActionListener { v, actionId, event ->
+                    if (actionId == EditorInfo.IME_ACTION_DONE) {
+                        etPesquisa.setText(pesquisa.text.toString())
+                        etPesquisa.clearFocus()
+
+                        if (pesquisa.text.toString().isNotEmpty()) {
+                            buscaMenu.setIcon(R.drawable.ic_baseline_close_24)
+                        } else {
+                            buscaMenu.setIcon(R.drawable.ic_baseline_search_24)
+                        }
+
+                        alert.hide()
+                    }
+                    false
+                } */
+
                 true
             }
             else -> {
