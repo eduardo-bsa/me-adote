@@ -23,4 +23,14 @@
     <string name="idade">Idade: </string>
     <string name="sexo">Sexo: </string>
     <string name="pesquisar">Pesquisar</string>
+
+    <!-- Filtro -->
+    <string name="filtros">Filtros</string>
+    <string name="idade_filtro">Idade</string>
+    <string name="sexo_filtro">Sexo</string>
+    <string name="especie">Espécie</string>
+    <string name="condicao">Condição</string>
+    <string name="localizacao">Localização</string>
+    <string name="estado">Estado</string>
+    <string name="cidade">Cidade</string>
 </resources>
