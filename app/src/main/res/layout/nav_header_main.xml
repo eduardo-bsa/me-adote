@@ -27,7 +27,7 @@
         app:riv_oval="true" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/btEntrar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/entrar"
@@ -46,7 +46,7 @@
         android:orientation="vertical"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/ivFoto"
-        app:layout_constraintStart_toEndOf="@+id/button"
+        app:layout_constraintStart_toEndOf="@+id/btEntrar"
         app:layout_constraintTop_toTopOf="@+id/ivFoto">
 
         <TextView

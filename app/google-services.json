@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "711380112621",
+    "firebase_url": "https://me-adote-e2955.firebaseio.com",
+    "project_id": "me-adote-e2955",
+    "storage_bucket": "me-adote-e2955.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:711380112621:android:74fa15688f1ee0fd0d28e4",
+        "android_client_info": {
+          "package_name": "com.example.meadote"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "711380112621-7qafhviutfi5hd51gr4g37gugpnrmfae.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-vt0tciqnA59WfmllWP5dPhycEg4Nr2Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "711380112621-7qafhviutfi5hd51gr4g37gugpnrmfae.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

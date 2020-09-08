@@ -33,4 +33,16 @@
     <string name="localizacao">Localização</string>
     <string name="estado">Estado</string>
     <string name="cidade">Cidade</string>
+
+    <!-- Login -->
+    <string name="criar_label">Crie sua conta como preferir</string>
+    <string name="gmail">CONTINUAR COM GMAIL</string>
+    <string name="email">CONTINUAR COM E-MAIL</string>
+    <string name="tenho_conta">Já tenho uma conta</string>
+    <string name="face">CONTINUAR COM FACEBOOK</string>
+    <string name="email_label">E-mail</string>
+    <string name="senha">Senha</string>
+    <string name="erro_email">Preencha o e-mail</string>
+    <string name="erro_senha">Preencha a senha</string>
+    <string name="email_invalido">E-mail inválido</string>
 </resources>
