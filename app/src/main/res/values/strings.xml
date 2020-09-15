@@ -17,6 +17,7 @@
     <string name="nos_ajude">Nos Ajude</string>
     <string name="avalie_google">Avalie na Google Play</string>
     <string name="filtro">Filtro</string>
+    <string name="inicio">Início</string>
 
     <!-- Main -->
     <string name="entrar">ENTRAR</string>
@@ -45,4 +46,7 @@
     <string name="erro_email">Preencha o e-mail</string>
     <string name="erro_senha">Preencha a senha</string>
     <string name="email_invalido">E-mail inválido</string>
+    <string name="continuar">CONTINUAR</string>
+
+    <!-- Conta -->
 </resources>
