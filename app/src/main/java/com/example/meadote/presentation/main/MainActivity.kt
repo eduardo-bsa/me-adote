@@ -18,9 +18,7 @@ import com.example.meadote.R
 import com.example.meadote.presentation.conta.ContaActivity
 import com.example.meadote.util.Utilitarios
 import com.google.android.material.navigation.NavigationView
-import com.google.android.material.textfield.TextInputLayout
 import kotlinx.android.synthetic.main.activity_main.*
-
 
 class MainActivity :
     AppCompatActivity(),
@@ -123,6 +121,7 @@ class MainActivity :
         nav_view.setNavigationItemSelectedListener(this)
         val headerLayout = nav_view.getHeaderView(0)
         val entrar = headerLayout.findViewById<Button>(R.id.btEntrar)
+
         entrar.setOnClickListener {
             drawer_layout.closeDrawer(GravityCompat.START)
             Utilitarios.login(this)

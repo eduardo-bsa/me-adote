@@ -49,4 +49,14 @@
     <string name="continuar">CONTINUAR</string>
 
     <!-- Conta -->
+    <string name="nova_conta">Nova Conta</string>
+    <string name="confirma_conta">Confirmar Senha</string>
+    <string name="nome">Nome Completo</string>
+    <string name="cep">CEP</string>
+    <string name="rua">Rua</string>
+    <string name="numero">Número</string>
+    <string name="complemento">Complemento</string>
+    <string name="salva">Salvar</string>
+    <string name="adicionar_foto">Adicionar Foto</string>
+    <string name="alterar_foto">Alterar Foto</string>
 </resources>

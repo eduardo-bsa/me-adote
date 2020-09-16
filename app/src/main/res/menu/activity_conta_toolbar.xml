@@ -2,8 +2,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/itMain"
-        android:icon="@drawable/ic_baseline_home_24"
+        android:id="@+id/itEdit"
+        android:icon="@drawable/ic_baseline_edit_24"
         android:title="@string/filtro"
         app:showAsAction="ifRoom" />
 </menu>

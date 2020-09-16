@@ -1,6 +1,5 @@
 package com.example.meadote.presentation.conta
 
-import android.app.AlertDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -12,7 +11,11 @@ import com.example.meadote.R
 import com.example.meadote.presentation.main.MainActivity
 import com.example.meadote.util.Utilitarios
 import com.google.android.material.navigation.NavigationView
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_conta.*
+import kotlinx.android.synthetic.main.activity_main.drawer_layout
+import kotlinx.android.synthetic.main.activity_main.nav_view
+import kotlinx.android.synthetic.main.activity_main.toolbar
+import kotlinx.android.synthetic.main.content_conta.*
 
 class ContaActivity :
     AppCompatActivity(),
@@ -25,6 +28,10 @@ class ContaActivity :
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         initDrawerLayoutAndNavigation()
+    }
+
+    override fun onStart() {
+        super.onStart()
     }
 
     private fun initDrawerLayoutAndNavigation() {
@@ -42,10 +49,19 @@ class ContaActivity :
         nav_view.setNavigationItemSelectedListener(this)
         val headerLayout = nav_view.getHeaderView(0)
         val entrar = headerLayout.findViewById<Button>(R.id.btEntrar)
-        entrar.setOnClickListener {
-            drawer_layout.closeDrawer(GravityCompat.START)
-            Utilitarios.login(this)
+
+        if (entrar.visibility == View.VISIBLE) {
+            entrar.setOnClickListener {
+                drawer_layout.closeDrawer(GravityCompat.START)
+                Utilitarios.login(this)
+            }
+
+            etTitulo.text = getString(R.string.nova_conta)
+            tiSenha.visibility = View.VISIBLE
+            tiSenhaConfirma.visibility = View.VISIBLE
+            btSave.visibility = View.VISIBLE
         }
+
         nav_view.menu.findItem(R.id.nav_conta).isVisible = false
     }
 
@@ -53,9 +69,13 @@ class ContaActivity :
         menu: Menu?
     ): Boolean {
         menuInflater.inflate(
-            R.menu.activity_toolbar,
+            R.menu.activity_conta_toolbar,
             menu
         )
+
+        if (etTitulo.text == getString(R.string.nova_conta)) {
+            menu?.findItem(R.id.itEdit)?.isVisible = false
+        }
 
         return true
     }
@@ -79,12 +99,8 @@ class ContaActivity :
         item: MenuItem
     ): Boolean {
         return when (item.itemId) {
-            R.id.itMain -> {
-                val intent = Intent(this, MainActivity::class.java)
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            R.id.itEdit -> {
 
-                startActivity(intent)
                 true
             }
             else -> {
