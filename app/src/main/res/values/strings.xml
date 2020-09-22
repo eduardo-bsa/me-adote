@@ -59,4 +59,8 @@
     <string name="salva">Salvar</string>
     <string name="adicionar_foto">Adicionar Foto</string>
     <string name="alterar_foto">Alterar Foto</string>
+    <string name="campo_obrigatorio">Campo obrigatório</string>
+    <string name="cep_invalido">CEP inválido</string>
+    <string name="senha_erro_confirma">As senhas não conferem</string>
+    <string name="bairro">Bairro</string>
 </resources>

@@ -15,6 +15,7 @@ import android.widget.ImageView
 import com.example.meadote.R
 import com.example.meadote.presentation.conta.ContaActivity
 import com.google.android.material.textfield.TextInputLayout
+import kotlinx.android.synthetic.main.content_conta.*
 
 object Utilitarios {
 
@@ -192,5 +193,18 @@ object Utilitarios {
             tiCampo?.error = ctx.getString(R.string.email_invalido)
             etCampo?.clearFocus()
         }
+    }
+
+    fun validaCampo(ctx: Context, etCampo: EditText?, tiCampo: TextInputLayout?) {
+        etCampo?.onFocusChangeListener =
+            View.OnFocusChangeListener { v, hasFocus ->
+                if (!hasFocus) {
+                    limpaErroCampo(etCampo, tiCampo)
+
+                    if (etCampo?.text.toString().isEmpty()) {
+                        tiCampo?.error = ctx.getString(R.string.campo_obrigatorio)
+                    }
+                }
+            }
     }
 }
