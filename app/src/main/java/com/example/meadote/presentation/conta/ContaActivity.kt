@@ -1,5 +1,6 @@
 package com.example.meadote.presentation.conta
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -12,7 +13,10 @@ import android.widget.EditText
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.example.meadote.R
+import com.example.meadote.data.repository.CEPRepository
 import com.example.meadote.presentation.main.MainActivity
 import com.example.meadote.util.Utilitarios
 import com.google.android.material.navigation.NavigationView
@@ -22,16 +26,17 @@ import kotlinx.android.synthetic.main.activity_main.drawer_layout
 import kotlinx.android.synthetic.main.activity_main.nav_view
 import kotlinx.android.synthetic.main.activity_main.toolbar
 import kotlinx.android.synthetic.main.content_conta.*
-import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.uiThread
-import org.json.JSONObject
-import java.io.BufferedReader
-import java.net.HttpURLConnection
-import java.net.URL
+import kotlinx.coroutines.*
 
 class ContaActivity :
     AppCompatActivity(),
     NavigationView.OnNavigationItemSelectedListener {
+
+    private lateinit var viewModel: ContaViewModel
+    var progressBar: AlertDialog? = null
+    var rua = ""
+    var bairro = ""
+    var cidEst = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +49,17 @@ class ContaActivity :
 
     override fun onStart() {
         super.onStart()
+
+        viewModel = ViewModelProvider(
+            this,
+            ContaViewModel.ContaViewModelFactory(CEPRepository())
+        ).get(ContaViewModel::class.java)
+
+        viewModel.cepLiveData.observe(this, Observer { endereco ->
+            rua = endereco[0].rua
+            bairro = endereco[0].bairro
+            cidEst = endereco[0].cidEst
+        })
 
         validaCampos()
         salva()
@@ -70,6 +86,35 @@ class ContaActivity :
                 }
             }
 
+        etCEP?.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable) {
+                if (etCEP.text.toString().length == 9) {
+                    Utilitarios.limpaErroCampo(etCEP, tiCEP)
+
+                    progressBar = Utilitarios.progressBar(this@ContaActivity)
+
+                    CoroutineScope(Dispatchers.IO).launch {
+                        async {
+                            viewModel.getCEP()
+                        }.await()
+                        withContext(Dispatchers.Main) {
+                            etRua.setText(rua)
+                            etBairro.setText(bairro)
+                            tvCidEst.setText(cidEst)
+
+                            cdCidEst.visibility = View.VISIBLE
+                            etNumero.requestFocus()
+
+                            progressBar?.dismiss()
+                        }
+                    }
+                }
+            }
+
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+        })
+
         etCEP.onFocusChangeListener =
             View.OnFocusChangeListener { v, hasFocus ->
                 if (!hasFocus) {
@@ -77,33 +122,12 @@ class ContaActivity :
 
                     if (etCEP.text.toString().isEmpty()) {
                         tiCEP?.error = getString(R.string.campo_obrigatorio)
+
+                        limpaEndereco()
                     } else if (etCEP.text.toString().replace("-", "").length < 8) {
                         tiCEP?.error = getString(R.string.cep_invalido)
-                    } else {
-                        val urlCEP = "https://viacep.com.br/ws/${etCEP.text.toString().replace("-", "")}/json"
-                        doAsync {
-                            val url = URL(urlCEP)
-                            val urlConnection = url.openConnection() as HttpURLConnection
-                            urlConnection.connectTimeout = 7000
-                            val content = urlConnection.inputStream.bufferedReader().use(BufferedReader::readText)
-                            val json = JSONObject(content)
-                            uiThread {
-                                if (json.has("erro")) {
-                                    tiCEP?.error = "erro"
-                                } else {
-                                    if (json.getString("uf").isNotEmpty()
-                                        && json.getString("localidade").isNotEmpty()) {
-                                        etRua.setText(json.getString("logradouro"))
-                                        etBairro.setText(json.getString("bairro"))
-                                        tvCidEst.text = "${json.getString("localidade")}/${json.getString("uf")}"
-                                        cdCidEst.visibility = View.VISIBLE
-                                        etNumero.requestFocus()
-                                    } else {
-                                        tiCEP?.error = getString(R.string.cep_invalido)
-                                    }
-                                }
-                            }
-                        }
+
+                        limpaEndereco()
                     }
                 }
             }
@@ -180,6 +204,12 @@ class ContaActivity :
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
         })
+    }
+
+    private fun limpaEndereco() {
+        etBairro.text = null
+        etRua.text = null
+        cdCidEst.visibility = View.GONE
     }
 
     private fun campoSalva(etCampo: EditText?, tiCampo: TextInputLayout?): Boolean {

@@ -3,6 +3,8 @@ package com.example.meadote.util
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -12,6 +14,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.ProgressBar
 import com.example.meadote.R
 import com.example.meadote.presentation.conta.ContaActivity
 import com.google.android.material.textfield.TextInputLayout
@@ -206,5 +209,24 @@ object Utilitarios {
                     }
                 }
             }
+    }
+
+    fun progressBar(ctx: Context) : AlertDialog {
+        val builder = AlertDialog.Builder(ctx)
+
+        val inflater = LayoutInflater.from(ctx)
+
+        val view = inflater.inflate(R.layout.progress_bar, null)
+
+        builder.setView(view)
+
+        val alert = builder.create()
+
+        alert.show()
+        alert.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        alert.setCancelable(false)
+        alert.setCanceledOnTouchOutside(false)
+
+        return alert
     }
 }
