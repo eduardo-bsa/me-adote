@@ -10,8 +10,8 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 class CEPRepository {
-    fun getCEP(): List<Endereco> {
-        val urlCEP = "https://viacep.com.br/ws/13145878/json"
+    fun getCEP(cep: String): List<Endereco> {
+        val urlCEP = "https://viacep.com.br/ws/${cep}/json"
         val url = URL(urlCEP)
         val urlConnection = url.openConnection() as HttpURLConnection
         urlConnection.connectTimeout = 7000

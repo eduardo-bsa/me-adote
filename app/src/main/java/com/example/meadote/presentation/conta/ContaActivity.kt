@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -34,9 +35,6 @@ class ContaActivity :
 
     private lateinit var viewModel: ContaViewModel
     var progressBar: AlertDialog? = null
-    var rua = ""
-    var bairro = ""
-    var cidEst = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,9 +54,24 @@ class ContaActivity :
         ).get(ContaViewModel::class.java)
 
         viewModel.cepLiveData.observe(this, Observer { endereco ->
-            rua = endereco[0].rua
-            bairro = endereco[0].bairro
-            cidEst = endereco[0].cidEst
+            if (endereco[0].rua.isNotEmpty() && endereco[0].rua != "erro"
+                && endereco[0].bairro.isNotEmpty() && endereco[0].bairro != "erro"
+                && endereco[0].cidEst.isNotEmpty() && endereco[0].cidEst != "erro") {
+                etRua.setText(endereco[0].rua)
+                etBairro.setText(endereco[0].bairro)
+                tvCidEst.text = endereco[0].cidEst
+
+                cdCidEst.visibility = View.VISIBLE
+                etNumero.requestFocus()
+            } else {
+                etBairro.requestFocus()
+
+                Toast.makeText(
+                    this,
+                    getString(R.string.cep_erro),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         })
 
         validaCampos()
@@ -95,16 +108,9 @@ class ContaActivity :
 
                     CoroutineScope(Dispatchers.IO).launch {
                         async {
-                            viewModel.getCEP()
+                            viewModel.getCEP(etCEP.text.toString())
                         }.await()
                         withContext(Dispatchers.Main) {
-                            etRua.setText(rua)
-                            etBairro.setText(bairro)
-                            tvCidEst.setText(cidEst)
-
-                            cdCidEst.visibility = View.VISIBLE
-                            etNumero.requestFocus()
-
                             progressBar?.dismiss()
                         }
                     }

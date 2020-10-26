@@ -14,16 +14,8 @@ class ContaViewModel(private val repository: CEPRepository) : ViewModel() {
 
     val cepLiveData = MutableLiveData<List<Endereco>>()
 
-    suspend fun getCEP() {
-        /*CoroutineScope(Dispatchers.Main).launch {
-            val endereco = withContext(Dispatchers.Default) {
-                repository.getCEP()
-            }
-
-            repository.getCEP()
-            cepLiveData.value = endereco
-        }*/
-        val endereco = repository.getCEP()
+    suspend fun getCEP(cep: String) {
+        val endereco = repository.getCEP(cep)
 
         withContext(Dispatchers.Main) {
         cepLiveData.value = endereco
