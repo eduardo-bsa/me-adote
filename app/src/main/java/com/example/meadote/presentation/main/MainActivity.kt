@@ -8,9 +8,7 @@ import android.view.*
 import android.view.View.OnFocusChangeListener
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
+import android.widget.*
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -121,11 +119,20 @@ class MainActivity :
         nav_view.setNavigationItemSelectedListener(this)
         val headerLayout = nav_view.getHeaderView(0)
         val entrar = headerLayout.findViewById<Button>(R.id.btEntrar)
+        val nome = headerLayout.findViewById<TextView>(R.id.tvNome)
+        val infos = headerLayout.findViewById<LinearLayout>(R.id.liInfoConta)
 
-        entrar.setOnClickListener {
-            drawer_layout.closeDrawer(GravityCompat.START)
-            Utilitarios.login(this)
+        if (nome.text.isNotEmpty()) {
+            entrar.visibility = View.GONE
+            infos.visibility = View.VISIBLE
+        } else {
+            entrar.setOnClickListener {
+                drawer_layout.closeDrawer(GravityCompat.START)
+                Utilitarios.login(this)
+            }
+            nav_view.menu.findItem(R.id.nav_conta).isVisible = false
         }
+
         nav_view.menu.findItem(R.id.nav_home).isVisible = false
     }
 

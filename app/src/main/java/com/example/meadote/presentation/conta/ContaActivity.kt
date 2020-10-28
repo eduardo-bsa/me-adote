@@ -1,6 +1,7 @@
 package com.example.meadote.presentation.conta
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -8,12 +9,14 @@ import android.text.TextWatcher
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout.DrawerListener
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.meadote.R
@@ -28,6 +31,7 @@ import kotlinx.android.synthetic.main.activity_main.nav_view
 import kotlinx.android.synthetic.main.activity_main.toolbar
 import kotlinx.android.synthetic.main.content_conta.*
 import kotlinx.coroutines.*
+
 
 class ContaActivity :
     AppCompatActivity(),
@@ -56,7 +60,8 @@ class ContaActivity :
         viewModel.cepLiveData.observe(this, Observer { endereco ->
             if (endereco[0].rua.isNotEmpty() && endereco[0].rua != "erro"
                 && endereco[0].bairro.isNotEmpty() && endereco[0].bairro != "erro"
-                && endereco[0].cidEst.isNotEmpty() && endereco[0].cidEst != "erro") {
+                && endereco[0].cidEst.isNotEmpty() && endereco[0].cidEst != "erro"
+            ) {
                 etRua.setText(endereco[0].rua)
                 etBairro.setText(endereco[0].bairro)
                 tvCidEst.text = endereco[0].cidEst
@@ -197,7 +202,7 @@ class ContaActivity :
                     && !s.toString().contains("-")
                     && (s.toString().length > oldText.length
                             || (oldText.contains("-")
-                                && !s.toString().contains("-")))
+                            && !s.toString().contains("-")))
                 ) {
                     text = s.toString().substring(0, 5) + "-" + s.toString().substring(5)
                     etCEP.setText(text)
@@ -237,7 +242,21 @@ class ContaActivity :
             R.string.navigation_drawer_close
         )
 
-        drawer_layout.addDrawerListener(toggle)
+        drawer_layout.addDrawerListener(object : DrawerListener {
+            override fun onDrawerSlide(drawerView: View, slideOffset: Float) {}
+
+            override fun onDrawerOpened(drawerView: View) {
+                val inputMethodManager: InputMethodManager =
+                    getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+
+                inputMethodManager.hideSoftInputFromWindow(drawerView.windowToken, 0)
+            }
+
+            override fun onDrawerClosed(drawerView: View) {}
+
+            override fun onDrawerStateChanged(newState: Int) {}
+        })
+
         toggle.syncState()
 
         nav_view.setNavigationItemSelectedListener(this)
