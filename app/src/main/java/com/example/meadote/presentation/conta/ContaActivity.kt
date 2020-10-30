@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -20,6 +21,7 @@ import androidx.drawerlayout.widget.DrawerLayout.DrawerListener
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.meadote.R
+import com.example.meadote.data.model.Usuario
 import com.example.meadote.data.repository.CEPRepository
 import com.example.meadote.presentation.main.MainActivity
 import com.example.meadote.util.Utilitarios
@@ -76,6 +78,16 @@ class ContaActivity :
                     getString(R.string.cep_erro),
                     Toast.LENGTH_SHORT
                 ).show()
+            }
+        })
+
+        viewModel.criaUserLiveData.observe(this, Observer { complete ->
+            progressBar!!.dismiss()
+
+            if (complete) {
+                updateUi()
+            } else {
+                Toast.makeText(this, getString(R.string.login_erro), Toast.LENGTH_SHORT).show()
             }
         })
 
@@ -162,34 +174,67 @@ class ContaActivity :
     private fun salva() {
         btSave.setOnClickListener {
             var erro = false
-            erro = campoSalva(etNome, tiNome)
-            erro = campoSalva(etRua, tiRua)
-            erro = campoSalva(etNumero, tiNumero)
-            erro = campoSalva(etSenha, tiSenha)
-            erro = campoSalva(etCEP, tiCEP)
-            erro = campoSalva(etBairro, tiBairro)
 
-            if (etEmail.text.toString().isEmpty()) {
-                Utilitarios.limpaErroCampo(etEmail, tiEmail)
-                tiEmail?.error = getString(R.string.campo_obrigatorio)
-                erro = true
-            } else if (!etEmail.text.toString().contains("@") ||
+            when {
+                campoSalva(etNome, tiNome) -> erro = true
+                campoSalva(etRua, tiRua) -> erro = true
+                campoSalva(etNumero, tiNumero) -> erro = true
+                campoSalva(etSenha, tiSenha) -> erro = true
+                campoSalva(etCEP, tiCEP) -> erro = true
+                campoSalva(etBairro, tiBairro) -> erro = true
+                campoSalva(etEmail, tiEmail) -> erro = true
+                campoSalva(etSenhaConfirma, tiSenhaConfirma) -> erro = true
+            }
+
+            if (!etEmail.text.toString().contains("@") ||
                 !etEmail.text.toString().contains(".")) {
                 Utilitarios.limpaErroCampo(etEmail, tiEmail)
                 tiEmail?.error = getString(R.string.email_invalido)
-                erro = true
-            }
 
-            if (etSenhaConfirma.text.toString().isEmpty()) {
-                Utilitarios.limpaErroCampo(etSenhaConfirma, tiSenhaConfirma)
-                tiSenhaConfirma?.error = getString(R.string.campo_obrigatorio)
+                Toast.makeText(
+                    this,
+                    getString(R.string.email_invalido),
+                    Toast.LENGTH_SHORT
+                ).show()
+
                 erro = true
             } else if (etSenhaConfirma.text.toString() != etSenha.text.toString()) {
                 Utilitarios.limpaErroCampo(etSenhaConfirma, tiSenhaConfirma)
-                tiSenhaConfirma?.error = getString(R.string.cep_invalido)
+                tiSenhaConfirma?.error = getString(R.string.senha_erro_confirma)
+
+                Toast.makeText(
+                    this,
+                    getString(R.string.senha_erro_confirma),
+                    Toast.LENGTH_SHORT
+                ).show()
+
                 erro = true
             }
+
+            if (!erro) {
+                progressBar = Utilitarios.progressBar(this@ContaActivity)
+
+                val usuario = Usuario(etNome.text.toString(),
+                    etEmail.text.toString(),
+                    etCEP.text.toString(),
+                    etBairro.text.toString(),
+                    etRua.text.toString(),
+                    etNumero.text.toString(),
+                    etComplemento.text.toString(),
+                "",
+                    etSenha.text.toString())
+
+                viewModel.criaUsuario(usuario, this)
+            }
         }
+    }
+
+    private fun updateUi() {
+        val intent = Intent(this, MainActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+
+        startActivity(intent)
     }
 
     private fun cepMascara() {
@@ -227,6 +272,13 @@ class ContaActivity :
         if (etCampo?.text.toString().isEmpty()) {
             Utilitarios.limpaErroCampo(etCampo, tiCampo)
             tiCampo?.error = getString(R.string.campo_obrigatorio)
+
+            Toast.makeText(
+                this,
+                getString(R.string.erro_preenchimento),
+                Toast.LENGTH_SHORT
+            ).show()
+
             return true
         }
 

@@ -14,11 +14,9 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
-import android.widget.ProgressBar
 import com.example.meadote.R
 import com.example.meadote.presentation.conta.ContaActivity
 import com.google.android.material.textfield.TextInputLayout
-import kotlinx.android.synthetic.main.content_conta.*
 
 object Utilitarios {
 

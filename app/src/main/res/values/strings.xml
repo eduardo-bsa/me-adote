@@ -64,4 +64,6 @@
     <string name="senha_erro_confirma">As senhas não conferem</string>
     <string name="bairro">Bairro</string>
     <string name="cep_erro">CEP não encontrado</string>
+    <string name="login_erro">Não foi possível registrar conta, verifique sua conexão</string>
+    <string name="erro_preenchimento">Preencha todos os campos obrigatórios</string>
 </resources>
