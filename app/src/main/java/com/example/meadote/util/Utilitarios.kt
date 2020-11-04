@@ -3,8 +3,10 @@ package com.example.meadote.util
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.net.ConnectivityManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -14,11 +16,14 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.Toast
 import com.example.meadote.R
 import com.example.meadote.presentation.conta.ContaActivity
 import com.google.android.material.textfield.TextInputLayout
 
 object Utilitarios {
+
+    private const val PREF = "com.example.meadote.util.PREF"
 
     fun login(ctx: Context) {
         val builder = AlertDialog.Builder(ctx)
@@ -226,5 +231,37 @@ object Utilitarios {
         alert.setCanceledOnTouchOutside(false)
 
         return alert
+    }
+
+    fun isConnected(
+        context: Context?
+    ): Boolean {
+        val cm = context?.getSystemService(
+            Context.CONNECTIVITY_SERVICE
+        ) as ConnectivityManager
+
+        val ni = cm.activeNetworkInfo
+        if (ni != null && ni.isConnected) {
+            return ni.isConnected
+        } else {
+            Toast.makeText(
+                context,
+                context.getString(R.string.erro_conexao),
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+        return false
+    }
+
+    fun salvaString(context: Context, key: String?, value: String?) {
+        val sp: SharedPreferences =
+            context.getSharedPreferences(PREF, Context.MODE_PRIVATE)
+        sp.edit().putString(key, value).apply()
+    }
+
+    fun consultaString(context: Context?, key: String?): String? {
+        val sp: SharedPreferences? =
+            context?.getSharedPreferences(PREF, Context.MODE_PRIVATE)
+        return sp?.getString(key, "")
     }
 }

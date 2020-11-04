@@ -85,6 +85,8 @@ class ContaActivity :
             progressBar!!.dismiss()
 
             if (complete) {
+                Toast.makeText(this, getString(R.string.usuario_criado), Toast.LENGTH_SHORT).show()
+
                 updateUi()
             } else {
                 Toast.makeText(this, getString(R.string.login_erro), Toast.LENGTH_SHORT).show()

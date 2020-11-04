@@ -125,8 +125,19 @@ class MainActivity :
         val entrar = headerLayout.findViewById<Button>(R.id.btEntrar)
         val nome = headerLayout.findViewById<TextView>(R.id.tvNome)
         val infos = headerLayout.findViewById<LinearLayout>(R.id.liInfoConta)
+        val email = headerLayout.findViewById<TextView>(R.id.tvEmail)
+        val endereco = headerLayout.findViewById<TextView>(R.id.tvEndereco)
 
-        if (nome.text.isNotEmpty()) {
+        if (Utilitarios.consultaString(this, "email")!!.isNotEmpty()) {
+            nome.text = Utilitarios.consultaString(this, "nome")
+            email.text = Utilitarios.consultaString(this, "email")
+
+            val end = Utilitarios.consultaString(this, "rua") +
+                    ", " +
+                    Utilitarios.consultaString(this, "numero")
+
+            endereco.text = end
+
             entrar.visibility = View.GONE
             infos.visibility = View.VISIBLE
         } else {

@@ -1,6 +1,7 @@
 <resources>
     <!-- General -->
     <string name="app_name">Me Adote</string>
+    <string name="erro_conexao">Verifique sua conexão</string>
 
     <!-- Menu -->
     <string name="navigation_drawer_open" translatable="false">
@@ -64,6 +65,7 @@
     <string name="senha_erro_confirma">As senhas não conferem</string>
     <string name="bairro">Bairro</string>
     <string name="cep_erro">CEP não encontrado</string>
-    <string name="login_erro">Não foi possível registrar conta, verifique sua conexão</string>
+    <string name="login_erro">Já existe uma conta com esse e-mail</string>
     <string name="erro_preenchimento">Preencha todos os campos obrigatórios</string>
+    <string name="usuario_criado">Usuário criado com sucesso</string>
 </resources>
