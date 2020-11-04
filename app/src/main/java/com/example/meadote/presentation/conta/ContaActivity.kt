@@ -93,6 +93,8 @@ class ContaActivity :
             }
         })
 
+        btExit.setOnClickListener { sair() }
+
         validaCampos()
         salva()
     }
@@ -223,6 +225,8 @@ class ContaActivity :
                     etRua.text.toString(),
                     etNumero.text.toString(),
                     etComplemento.text.toString(),
+                    tvCidEst.text.toString().substringBefore("/"),
+                    tvCidEst.text.toString().substringAfter("/"),
                 "",
                     etSenha.text.toString())
 
@@ -317,16 +321,30 @@ class ContaActivity :
         val headerLayout = nav_view.getHeaderView(0)
         val entrar = headerLayout.findViewById<Button>(R.id.btEntrar)
 
-        if (entrar.visibility == View.VISIBLE) {
+        if (Utilitarios.consultaString(this, "email")!!.isEmpty()) {
+            entrar.visibility = View.VISIBLE
+
             entrar.setOnClickListener {
                 drawer_layout.closeDrawer(GravityCompat.START)
                 Utilitarios.login(this)
             }
 
             etTitulo.text = getString(R.string.nova_conta)
-            tiSenha.visibility = View.VISIBLE
-            tiSenhaConfirma.visibility = View.VISIBLE
-            btSave.visibility = View.VISIBLE
+        } else {
+            etTitulo.text = getString(R.string.conta)
+
+            tvNome.text = Utilitarios.consultaString(this, "nome")
+            tvEmail.text = Utilitarios.consultaString(this, "email")
+            tvRua.text = Utilitarios.consultaString(this, "rua")
+            tvNumero.text = Utilitarios.consultaString(this, "numero")
+            tvCEP.text = Utilitarios.consultaString(this, "cep")
+            tvBairro.text = Utilitarios.consultaString(this, "bairro")
+            tvCidade.text = Utilitarios.consultaString(this, "cidade")
+            tvEstado.text = Utilitarios.consultaString(this, "estado")
+
+            llCriaConta.visibility = View.GONE
+            llConta.visibility = View.VISIBLE
+            btExit.visibility = View.VISIBLE
         }
 
         nav_view.menu.findItem(R.id.nav_conta).isVisible = false
@@ -374,5 +392,21 @@ class ContaActivity :
                 super.onOptionsItemSelected(item)
             }
         }
+    }
+
+    private fun sair() {
+        Utilitarios.limpaString(this)
+
+        val intent = Intent(this, MainActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+
+        startActivity(intent)
+
+        Toast.makeText(
+            this,
+            getString(R.string.saiu),
+            Toast.LENGTH_SHORT
+        ).show()
     }
 }

@@ -8,6 +8,8 @@ data class Usuario (
     val rua: String,
     val numero: String,
     val complemento: String,
+    val cidade: String,
+    val estado: String,
     val foto: String,
     val senha: String
 )

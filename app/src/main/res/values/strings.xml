@@ -68,4 +68,7 @@
     <string name="login_erro">Já existe uma conta com esse e-mail</string>
     <string name="erro_preenchimento">Preencha todos os campos obrigatórios</string>
     <string name="usuario_criado">Usuário criado com sucesso</string>
+    <string name="conta">Conta</string>
+    <string name="sair">Sair</string>
+    <string name="saiu">Você saiu</string>
 </resources>

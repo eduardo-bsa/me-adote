@@ -264,4 +264,10 @@ object Utilitarios {
             context?.getSharedPreferences(PREF, Context.MODE_PRIVATE)
         return sp?.getString(key, "")
     }
+
+    fun limpaString(context: Context) {
+        val sp: SharedPreferences =
+            context.getSharedPreferences(PREF, Context.MODE_PRIVATE)
+        sp.edit().clear().apply()
+    }
 }

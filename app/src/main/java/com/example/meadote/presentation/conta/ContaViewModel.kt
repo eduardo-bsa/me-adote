@@ -90,6 +90,18 @@ class ContaViewModel(private val cepRepo: CEPRepository) : ViewModel() {
                                 "foto",
                                 usuario.foto
                             )
+
+                            Utilitarios.salvaString(
+                                ctx,
+                                "cidade",
+                                usuario.cidade
+                            )
+
+                            Utilitarios.salvaString(
+                                ctx,
+                                "estado",
+                                usuario.estado
+                            )
                         }
                     } else {
                         criaUserLiveData.value = false
