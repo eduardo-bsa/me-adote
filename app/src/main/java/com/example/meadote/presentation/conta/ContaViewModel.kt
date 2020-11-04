@@ -38,6 +38,8 @@ class ContaViewModel(private val cepRepo: CEPRepository) : ViewModel() {
             auth.createUserWithEmailAndPassword(usuario.email, usuario.senha)
                 .addOnCompleteListener(ctx as Activity) { task ->
                     if (task.isSuccessful) {
+                        usuario.senha = ""
+
                         ref = FirebaseDatabase.getInstance().getReference("usuario")
                         val userId = ref.push().key
                         ref.child(userId!!).setValue(usuario).addOnCompleteListener {

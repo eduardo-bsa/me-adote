@@ -1,5 +1,6 @@
 package com.example.meadote.util
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
@@ -9,23 +10,37 @@ import android.graphics.drawable.ColorDrawable
 import android.net.ConnectivityManager
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.Toast
+import android.widget.*
 import com.example.meadote.R
+import com.example.meadote.data.model.Usuario
 import com.example.meadote.presentation.conta.ContaActivity
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.*
+import com.google.firebase.ktx.Firebase
 
 object Utilitarios {
 
+    private lateinit var ref: DatabaseReference
+    private lateinit var auth: FirebaseAuth
+    private val usuarios: MutableList<Usuario> = mutableListOf()
     private const val PREF = "com.example.meadote.util.PREF"
 
+    private var context: Context? = null
+    private var emailFB = ""
+    private var tiFB: TextInputLayout? = null
+    private var etFB: EditText? = null
+    var progressBar: AlertDialog? = null
+
     fun login(ctx: Context) {
+        context = ctx
+
         val builder = AlertDialog.Builder(ctx)
         val inflater = LayoutInflater.from(ctx)
         val view = inflater.inflate(R.layout.dialog_login, null)
@@ -102,26 +117,25 @@ object Utilitarios {
                     validaEmail = false
                 }
 
-                /*if (validaSenha && validaEmail) {
+                if (validaSenha && validaEmail) {
+                    progressBar = progressBar(ctx)
 
-                }*/
+                    doLogin(ctx, etEmail.text.toString(), etSenha.text.toString(), alert)
+                }
             } else {
                 if (etEmail.text.toString().isEmpty()
                     || !etEmail.text.toString().contains("@")
                     || !etEmail.text.toString().contains(".")) {
                     validaEmail(ctx, etEmail, tiEmail)
                 } else {
-                    var existe = false
-                    if (existe) {
-                        tiSenha.visibility = View.VISIBLE
-                        etSenha.requestFocus()
-                    } else {
-                        val intent = Intent(ctx, ContaActivity::class.java)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    progressBar = progressBar(ctx)
 
-                        ctx.startActivity(intent)
-                    }
+                    emailFB = etEmail.text.toString()
+                    tiFB = tiSenha
+                    etFB = etSenha
+
+                    ref = FirebaseDatabase.getInstance().getReference("usuario")
+                    ref.addListenerForSingleValueEvent(emailEventListener)
                 }
             }
         }
@@ -132,19 +146,12 @@ object Utilitarios {
                 || !etEmail.text.toString().contains(".")) {
                 validaEmail(ctx, etEmail, tiEmail)
             } else {
-                var existe = false
-                if (tiSenha.visibility != View.VISIBLE) {
-                    if (existe) {
-                        tiSenha.visibility = View.VISIBLE
-                        etSenha.requestFocus()
-                    } else {
-                        val intent = Intent(ctx, ContaActivity::class.java)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                emailFB = etEmail.text.toString()
+                tiFB = tiSenha
+                etFB = etSenha
 
-                        ctx.startActivity(intent)
-                    }
-                }
+                ref = FirebaseDatabase.getInstance().getReference("usuario")
+                ref.addListenerForSingleValueEvent(emailEventListener)
             }
             false
         }
@@ -171,6 +178,61 @@ object Utilitarios {
 
             false
         }
+    }
+
+    var emailEventListener: ValueEventListener = object : ValueEventListener {
+        override fun onDataChange(dataSnapshot: DataSnapshot) {
+            for (snapshot in dataSnapshot.children) {
+                val usuario = snapshot.getValue(Usuario::class.java)
+                usuarios.add(usuario!!)
+            }
+
+            var existeEmail = false
+
+            if (usuarios.isNotEmpty()) {
+                for (i in usuarios.indices) {
+                    existeEmail = usuarios[i].email.contains(emailFB)
+                }
+            }
+
+            if (existeEmail) {
+                progressBar?.dismiss()
+
+                tiFB?.visibility = View.VISIBLE
+                etFB?.requestFocus()
+            } else {
+                progressBar?.dismiss()
+
+                val intent = Intent(context, ContaActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+
+                context?.startActivity(intent)
+            }
+        }
+
+        override fun onCancelled(databaseError: DatabaseError) {}
+    }
+
+    private fun doLogin(ctx: Context, email: String, senha: String, alert: AlertDialog) {
+        auth = Firebase.auth
+
+        auth.createUserWithEmailAndPassword(email, senha)
+            .addOnCompleteListener(ctx as Activity) { task ->
+                if (task.isSuccessful) {
+                    ref = FirebaseDatabase.getInstance().getReference("usuario")
+                    ref.addListenerForSingleValueEvent(emailEventListener)
+
+                    progressBar!!.dismiss()
+                    alert.dismiss()
+
+                    Toast.makeText(
+                        ctx,
+                        ctx.getString(R.string.entrou),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
     }
 
     fun limpaErroCampo(etCampo: EditText?, tiCampo: TextInputLayout?) {
