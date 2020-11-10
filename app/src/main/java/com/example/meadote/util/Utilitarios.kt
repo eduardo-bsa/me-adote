@@ -38,7 +38,7 @@ object Utilitarios {
     private var etFB: EditText? = null
     var progressBar: AlertDialog? = null
 
-    fun login(ctx: Context) {
+    fun login(ctx: Context, main: Boolean) {
         context = ctx
 
         val builder = AlertDialog.Builder(ctx)
@@ -103,6 +103,7 @@ object Utilitarios {
         btContinuar.setOnClickListener {
             var validaEmail = true
             var validaSenha = true
+
             if (tiSenha.visibility == View.VISIBLE) {
                 if (etSenha.text.toString().isEmpty()) {
                     limpaErroCampo(etSenha, tiSenha)
@@ -120,7 +121,7 @@ object Utilitarios {
                 if (validaSenha && validaEmail) {
                     progressBar = progressBar(ctx)
 
-                    doLogin(ctx, etEmail.text.toString(), etSenha.text.toString(), alert)
+                    doLogin(ctx, etEmail.text.toString(), etSenha.text.toString(), alert, main)
                 }
             } else {
                 if (etEmail.text.toString().isEmpty()
@@ -159,6 +160,7 @@ object Utilitarios {
         etSenha.setOnEditorActionListener { v, actionId, event ->
             var validaEmail = true
             var validaSenha = true
+
             if (etSenha.text.toString().isEmpty()) {
                 limpaErroCampo(etSenha, tiSenha)
                 tiSenha.error = ctx.getString(R.string.erro_senha)
@@ -172,9 +174,11 @@ object Utilitarios {
                 validaEmail = false
             }
 
-            /*if (validaSenha && validaEmail) {
+            if (validaSenha && validaEmail) {
+                progressBar = progressBar(ctx)
 
-            }*/
+                doLogin(ctx, etEmail.text.toString(), etSenha.text.toString(), alert, main)
+            }
 
             false
         }
@@ -182,6 +186,8 @@ object Utilitarios {
 
     var emailEventListener: ValueEventListener = object : ValueEventListener {
         override fun onDataChange(dataSnapshot: DataSnapshot) {
+            usuarios.clear()
+
             for (snapshot in dataSnapshot.children) {
                 val usuario = snapshot.getValue(Usuario::class.java)
                 usuarios.add(usuario!!)
@@ -214,25 +220,33 @@ object Utilitarios {
         override fun onCancelled(databaseError: DatabaseError) {}
     }
 
-    private fun doLogin(ctx: Context, email: String, senha: String, alert: AlertDialog) {
-        auth = Firebase.auth
+    private fun doLogin(ctx: Context, email: String, senha: String, alert: AlertDialog, main: Boolean) {
+        auth = FirebaseAuth.getInstance()
 
-        auth.createUserWithEmailAndPassword(email, senha)
-            .addOnCompleteListener(ctx as Activity) { task ->
-                if (task.isSuccessful) {
-                    ref = FirebaseDatabase.getInstance().getReference("usuario")
-                    ref.addListenerForSingleValueEvent(emailEventListener)
+        auth.signInWithEmailAndPassword(email, senha).addOnCompleteListener(ctx as Activity){ task ->
+            if (task.isSuccessful) {
+                progressBar?.dismiss()
+                alert.dismiss()
 
-                    progressBar!!.dismiss()
-                    alert.dismiss()
+                if (main) {
 
-                    Toast.makeText(
-                        ctx,
-                        ctx.getString(R.string.entrou),
-                        Toast.LENGTH_SHORT
-                    ).show()
                 }
+
+                Toast.makeText(
+                    ctx,
+                    ctx.getString(R.string.entrou),
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                progressBar?.dismiss()
+
+                Toast.makeText(
+                    ctx,
+                    ctx.getString(R.string.erro_login),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
+        }
     }
 
     fun limpaErroCampo(etCampo: EditText?, tiCampo: TextInputLayout?) {

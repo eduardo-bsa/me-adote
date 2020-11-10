@@ -48,6 +48,7 @@
     <string name="erro_senha">Preencha a senha</string>
     <string name="email_invalido">E-mail inválido</string>
     <string name="continuar">CONTINUAR</string>
+    <string name="erro_login">Não foi possível validar, tente novamente mais tarde</string>
 
     <!-- Conta -->
     <string name="nova_conta">Nova Conta</string>

@@ -143,7 +143,7 @@ class MainActivity :
         } else {
             entrar.setOnClickListener {
                 drawer_layout.closeDrawer(GravityCompat.START)
-                Utilitarios.login(this)
+                Utilitarios.login(this, true)
             }
             nav_view.menu.findItem(R.id.nav_conta).isVisible = false
         }

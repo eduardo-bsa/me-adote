@@ -326,7 +326,7 @@ class ContaActivity :
 
             entrar.setOnClickListener {
                 drawer_layout.closeDrawer(GravityCompat.START)
-                Utilitarios.login(this)
+                Utilitarios.login(this, false)
             }
 
             etTitulo.text = getString(R.string.nova_conta)
