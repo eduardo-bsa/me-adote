@@ -19,6 +19,7 @@ import android.widget.*
 import com.example.meadote.R
 import com.example.meadote.data.model.Usuario
 import com.example.meadote.presentation.conta.ContaActivity
+import com.example.meadote.presentation.main.MainActivity
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -27,7 +28,6 @@ import com.google.firebase.ktx.Firebase
 
 object Utilitarios {
 
-    private lateinit var ref: DatabaseReference
     private lateinit var auth: FirebaseAuth
     private val usuarios: MutableList<Usuario> = mutableListOf()
     private const val PREF = "com.example.meadote.util.PREF"
@@ -37,6 +37,7 @@ object Utilitarios {
     private var tiFB: TextInputLayout? = null
     private var etFB: EditText? = null
     var progressBar: AlertDialog? = null
+    lateinit var usuario: Usuario
 
     fun login(ctx: Context, main: Boolean) {
         context = ctx
@@ -135,8 +136,11 @@ object Utilitarios {
                     tiFB = tiSenha
                     etFB = etSenha
 
-                    ref = FirebaseDatabase.getInstance().getReference("usuario")
-                    ref.addListenerForSingleValueEvent(emailEventListener)
+                    val query = FirebaseDatabase.getInstance().getReference("usuario")
+                        .orderByChild("email")
+                        .equalTo(emailFB)
+
+                    query.addListenerForSingleValueEvent(emailEventListener)
                 }
             }
         }
@@ -151,8 +155,11 @@ object Utilitarios {
                 tiFB = tiSenha
                 etFB = etSenha
 
-                ref = FirebaseDatabase.getInstance().getReference("usuario")
-                ref.addListenerForSingleValueEvent(emailEventListener)
+                val query = FirebaseDatabase.getInstance().getReference("usuario")
+                    .orderByChild("email")
+                    .equalTo(emailFB)
+
+                query.addListenerForSingleValueEvent(emailEventListener)
             }
             false
         }
@@ -196,13 +203,25 @@ object Utilitarios {
             var existeEmail = false
 
             if (usuarios.isNotEmpty()) {
-                for (i in usuarios.indices) {
-                    existeEmail = usuarios[i].email.contains(emailFB)
-                }
+                existeEmail = true
             }
 
             if (existeEmail) {
                 progressBar?.dismiss()
+
+                val usu = Usuario(usuarios[0].nome,
+                    usuarios[0].email,
+                    usuarios[0].cep,
+                    usuarios[0].bairro,
+                    usuarios[0].rua,
+                    usuarios[0].numero,
+                    usuarios[0].complemento,
+                    usuarios[0].cidade,
+                    usuarios[0].estado,
+                    usuarios[0].foto,
+                    "")
+
+                usuario = usu
 
                 tiFB?.visibility = View.VISIBLE
                 etFB?.requestFocus()
@@ -228,8 +247,68 @@ object Utilitarios {
                 progressBar?.dismiss()
                 alert.dismiss()
 
-                if (main) {
+                salvaString(
+                    ctx,
+                    "nome",
+                    usuario.nome
+                )
 
+                salvaString(
+                    ctx,
+                    "email",
+                    usuario.email
+                )
+
+                salvaString(
+                    ctx,
+                    "cep",
+                    usuario.cep
+                )
+
+                salvaString(
+                    ctx,
+                    "bairro",
+                    usuario.bairro
+                )
+
+                salvaString(
+                    ctx,
+                    "rua",
+                    usuario.rua
+                )
+
+                salvaString(
+                    ctx,
+                    "numero",
+                    usuario.numero
+                )
+
+                salvaString(
+                    ctx,
+                    "complemento",
+                    usuario.complemento
+                )
+
+                salvaString(
+                    ctx,
+                    "foto",
+                    usuario.foto
+                )
+
+                salvaString(
+                    ctx,
+                    "cidade",
+                    usuario.cidade
+                )
+
+                salvaString(
+                    ctx,
+                    "estado",
+                    usuario.estado
+                )
+
+                if (main) {
+                    MainActivity().atualizaUsuario()
                 }
 
                 Toast.makeText(

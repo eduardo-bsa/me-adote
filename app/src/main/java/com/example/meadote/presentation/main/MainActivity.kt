@@ -21,12 +21,19 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.activity_main.*
+import org.w3c.dom.Text
 
 class MainActivity :
     AppCompatActivity(),
     NavigationView.OnNavigationItemSelectedListener {
 
     lateinit var buscaMenu: MenuItem
+
+    lateinit var entrar: Button
+    lateinit var nome: TextView
+    lateinit var infos: LinearLayout
+    lateinit var email: TextView
+    lateinit var endereco: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -122,11 +129,11 @@ class MainActivity :
 
         nav_view.setNavigationItemSelectedListener(this)
         val headerLayout = nav_view.getHeaderView(0)
-        val entrar = headerLayout.findViewById<Button>(R.id.btEntrar)
-        val nome = headerLayout.findViewById<TextView>(R.id.tvNome)
-        val infos = headerLayout.findViewById<LinearLayout>(R.id.liInfoConta)
-        val email = headerLayout.findViewById<TextView>(R.id.tvEmail)
-        val endereco = headerLayout.findViewById<TextView>(R.id.tvEndereco)
+        entrar = headerLayout.findViewById<Button>(R.id.btEntrar)
+        nome = headerLayout.findViewById<TextView>(R.id.tvNome)
+        infos = headerLayout.findViewById<LinearLayout>(R.id.liInfoConta)
+        email = headerLayout.findViewById<TextView>(R.id.tvEmail)
+        endereco = headerLayout.findViewById<TextView>(R.id.tvEndereco)
 
         if (Utilitarios.consultaString(this, "email")!!.isNotEmpty()) {
             nome.text = Utilitarios.consultaString(this, "nome")
@@ -209,5 +216,19 @@ class MainActivity :
                 super.onOptionsItemSelected(item)
             }
         }
+    }
+
+    fun atualizaUsuario() {
+        nome.text = Utilitarios.consultaString(this, "nome")
+        email.text = Utilitarios.consultaString(this, "email")
+
+        val end = Utilitarios.consultaString(this, "rua") +
+                ", " +
+                Utilitarios.consultaString(this, "numero")
+
+        endereco.text = end
+
+        entrar.visibility = View.GONE
+        infos.visibility = View.VISIBLE
     }
 }
