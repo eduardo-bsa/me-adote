@@ -31,15 +31,13 @@ class ContaViewModel(private val cepRepo: CEPRepository) : ViewModel() {
         }
     }
 
-    fun criaUsuario(usuario: Usuario, ctx: Context) {
+    fun criaUsuario(usuario: Usuario, ctx: Context, senha: String) {
         if (Utilitarios.isConnected(ctx)) {
             auth = Firebase.auth
 
-            auth.createUserWithEmailAndPassword(usuario.email, usuario.senha)
+            auth.createUserWithEmailAndPassword(usuario.email, senha)
                 .addOnCompleteListener(ctx as Activity) { task ->
                     if (task.isSuccessful) {
-                        usuario.senha = ""
-
                         ref = FirebaseDatabase.getInstance().getReference("usuario")
                         val userId = ref.push().key
                         ref.child(userId!!).setValue(usuario).addOnCompleteListener {

@@ -13,6 +13,7 @@ import android.widget.*
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import com.example.meadote.R
 import com.example.meadote.presentation.conta.ContaActivity
 import com.example.meadote.util.Utilitarios
@@ -28,12 +29,7 @@ class MainActivity :
     NavigationView.OnNavigationItemSelectedListener {
 
     lateinit var buscaMenu: MenuItem
-
-    lateinit var entrar: Button
-    lateinit var nome: TextView
-    lateinit var infos: LinearLayout
-    lateinit var email: TextView
-    lateinit var endereco: TextView
+    lateinit var ctx: Context
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +38,7 @@ class MainActivity :
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         initDrawerLayoutAndNavigation()
+        ctx = this
     }
 
     override fun onStart() {
@@ -124,35 +121,45 @@ class MainActivity :
             R.string.navigation_drawer_close
         )
 
-        drawer_layout.addDrawerListener(toggle)
-        toggle.syncState()
-
         nav_view.setNavigationItemSelectedListener(this)
         val headerLayout = nav_view.getHeaderView(0)
-        entrar = headerLayout.findViewById<Button>(R.id.btEntrar)
-        nome = headerLayout.findViewById<TextView>(R.id.tvNome)
-        infos = headerLayout.findViewById<LinearLayout>(R.id.liInfoConta)
-        email = headerLayout.findViewById<TextView>(R.id.tvEmail)
-        endereco = headerLayout.findViewById<TextView>(R.id.tvEndereco)
+        val entrar = headerLayout.findViewById<Button>(R.id.btEntrar)
+        val nome = headerLayout.findViewById<TextView>(R.id.tvNome)
+        val infos = headerLayout.findViewById<LinearLayout>(R.id.liInfoConta)
+        val email = headerLayout.findViewById<TextView>(R.id.tvEmail)
+        val endereco = headerLayout.findViewById<TextView>(R.id.tvEndereco)
 
-        if (Utilitarios.consultaString(this, "email")!!.isNotEmpty()) {
-            nome.text = Utilitarios.consultaString(this, "nome")
-            email.text = Utilitarios.consultaString(this, "email")
+        drawer_layout.addDrawerListener(object : DrawerLayout.DrawerListener {
+            override fun onDrawerSlide(drawerView: View, slideOffset: Float) {}
 
-            val end = Utilitarios.consultaString(this, "rua") +
-                    ", " +
-                    Utilitarios.consultaString(this, "numero")
+            override fun onDrawerOpened(drawerView: View) {
+                if (Utilitarios.consultaString(ctx, "email")!!.isNotEmpty()) {
+                    nome.text = Utilitarios.consultaString(ctx, "nome")
+                    email.text = Utilitarios.consultaString(ctx, "email")
 
-            endereco.text = end
+                    val end = Utilitarios.consultaString(ctx, "rua") +
+                            ", " +
+                            Utilitarios.consultaString(ctx, "numero")
 
-            entrar.visibility = View.GONE
-            infos.visibility = View.VISIBLE
-        } else {
-            entrar.setOnClickListener {
-                drawer_layout.closeDrawer(GravityCompat.START)
-                Utilitarios.login(this, true)
+                    endereco.text = end
+
+                    entrar.visibility = View.GONE
+                    infos.visibility = View.VISIBLE
+                } else {
+                    nav_view.menu.findItem(R.id.nav_conta).isVisible = false
+                }
             }
-            nav_view.menu.findItem(R.id.nav_conta).isVisible = false
+
+            override fun onDrawerClosed(drawerView: View) {}
+
+            override fun onDrawerStateChanged(newState: Int) {}
+        })
+
+        toggle.syncState()
+
+        entrar.setOnClickListener {
+            drawer_layout.closeDrawer(GravityCompat.START)
+            Utilitarios.login(this)
         }
 
         nav_view.menu.findItem(R.id.nav_home).isVisible = false
@@ -216,19 +223,5 @@ class MainActivity :
                 super.onOptionsItemSelected(item)
             }
         }
-    }
-
-    fun atualizaUsuario() {
-        nome.text = Utilitarios.consultaString(this, "nome")
-        email.text = Utilitarios.consultaString(this, "email")
-
-        val end = Utilitarios.consultaString(this, "rua") +
-                ", " +
-                Utilitarios.consultaString(this, "numero")
-
-        endereco.text = end
-
-        entrar.visibility = View.GONE
-        infos.visibility = View.VISIBLE
     }
 }

@@ -39,7 +39,7 @@ object Utilitarios {
     var progressBar: AlertDialog? = null
     lateinit var usuario: Usuario
 
-    fun login(ctx: Context, main: Boolean) {
+    fun login(ctx: Context) {
         context = ctx
 
         val builder = AlertDialog.Builder(ctx)
@@ -122,7 +122,7 @@ object Utilitarios {
                 if (validaSenha && validaEmail) {
                     progressBar = progressBar(ctx)
 
-                    doLogin(ctx, etEmail.text.toString(), etSenha.text.toString(), alert, main)
+                    doLogin(ctx, etEmail.text.toString(), etSenha.text.toString(), alert)
                 }
             } else {
                 if (etEmail.text.toString().isEmpty()
@@ -184,7 +184,7 @@ object Utilitarios {
             if (validaSenha && validaEmail) {
                 progressBar = progressBar(ctx)
 
-                doLogin(ctx, etEmail.text.toString(), etSenha.text.toString(), alert, main)
+                doLogin(ctx, etEmail.text.toString(), etSenha.text.toString(), alert)
             }
 
             false
@@ -218,8 +218,7 @@ object Utilitarios {
                     usuarios[0].complemento,
                     usuarios[0].cidade,
                     usuarios[0].estado,
-                    usuarios[0].foto,
-                    "")
+                    usuarios[0].foto)
 
                 usuario = usu
 
@@ -239,7 +238,7 @@ object Utilitarios {
         override fun onCancelled(databaseError: DatabaseError) {}
     }
 
-    private fun doLogin(ctx: Context, email: String, senha: String, alert: AlertDialog, main: Boolean) {
+    private fun doLogin(ctx: Context, email: String, senha: String, alert: AlertDialog) {
         auth = FirebaseAuth.getInstance()
 
         auth.signInWithEmailAndPassword(email, senha).addOnCompleteListener(ctx as Activity){ task ->
@@ -307,9 +306,9 @@ object Utilitarios {
                     usuario.estado
                 )
 
-                if (main) {
+                /*if (main) {
                     MainActivity().atualizaUsuario()
-                }
+                }*/
 
                 Toast.makeText(
                     ctx,

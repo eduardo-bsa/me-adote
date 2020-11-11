@@ -9,10 +9,9 @@ class Usuario (val nome: String,
                val complemento: String,
                val cidade: String,
                val estado: String,
-               val foto: String,
-               var senha: String) {
+               val foto: String) {
 
-    constructor() : this ("","", "", "", "", "", "", "", "", "", "") {
+    constructor() : this ("","", "", "", "", "", "", "", "", "") {
 
     }
 

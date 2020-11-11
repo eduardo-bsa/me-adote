@@ -11,9 +11,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -27,6 +25,7 @@ import com.example.meadote.presentation.main.MainActivity
 import com.example.meadote.util.Utilitarios
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_conta.*
 import kotlinx.android.synthetic.main.activity_main.drawer_layout
 import kotlinx.android.synthetic.main.activity_main.nav_view
@@ -227,10 +226,9 @@ class ContaActivity :
                     etComplemento.text.toString(),
                     tvCidEst.text.toString().substringBefore("/"),
                     tvCidEst.text.toString().substringAfter("/"),
-                "",
-                    etSenha.text.toString())
+                "")
 
-                viewModel.criaUsuario(usuario, this)
+                viewModel.criaUsuario(usuario, this, etSenha.text.toString())
             }
         }
     }
@@ -320,13 +318,17 @@ class ContaActivity :
         nav_view.setNavigationItemSelectedListener(this)
         val headerLayout = nav_view.getHeaderView(0)
         val entrar = headerLayout.findViewById<Button>(R.id.btEntrar)
+        val nome = headerLayout.findViewById<TextView>(R.id.tvNome)
+        val infos = headerLayout.findViewById<LinearLayout>(R.id.liInfoConta)
+        val email = headerLayout.findViewById<TextView>(R.id.tvEmail)
+        val endereco = headerLayout.findViewById<TextView>(R.id.tvEndereco)
 
         if (Utilitarios.consultaString(this, "email")!!.isEmpty()) {
             entrar.visibility = View.VISIBLE
 
             entrar.setOnClickListener {
                 drawer_layout.closeDrawer(GravityCompat.START)
-                Utilitarios.login(this, false)
+                Utilitarios.login(this)
             }
 
             etTitulo.text = getString(R.string.nova_conta)
@@ -345,6 +347,18 @@ class ContaActivity :
             llCriaConta.visibility = View.GONE
             llConta.visibility = View.VISIBLE
             btExit.visibility = View.VISIBLE
+
+            nome.text = Utilitarios.consultaString(this, "nome")
+            email.text = Utilitarios.consultaString(this, "email")
+
+            val end = Utilitarios.consultaString(this, "rua") +
+                    ", " +
+                    Utilitarios.consultaString(this, "numero")
+
+            endereco.text = end
+
+            entrar.visibility = View.GONE
+            infos.visibility = View.VISIBLE
         }
 
         nav_view.menu.findItem(R.id.nav_conta).isVisible = false
@@ -396,6 +410,7 @@ class ContaActivity :
 
     private fun sair() {
         Utilitarios.limpaString(this)
+        FirebaseAuth.getInstance().signOut()
 
         val intent = Intent(this, MainActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
