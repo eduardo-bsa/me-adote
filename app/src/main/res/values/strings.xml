@@ -73,4 +73,9 @@
     <string name="sair">Sair</string>
     <string name="saiu">Você saiu</string>
     <string name="entrou">Autenticação realizada com sucesso</string>
+    <string name="editar_conta">Editar Conta</string>
+    <string name="nova_senha">Nova Senha</string>
+    <string name="confirma_nova_senha">Confirmar Nova Senha</string>
+    <string name="cancelar">Cancelar</string>
+
 </resources>

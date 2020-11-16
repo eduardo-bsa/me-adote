@@ -145,6 +145,7 @@ class MainActivity :
 
                     entrar.visibility = View.GONE
                     infos.visibility = View.VISIBLE
+                    nav_view.menu.findItem(R.id.nav_conta).isVisible = true
                 } else {
                     nav_view.menu.findItem(R.id.nav_conta).isVisible = false
                 }

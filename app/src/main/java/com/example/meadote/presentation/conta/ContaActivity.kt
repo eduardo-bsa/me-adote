@@ -40,6 +40,8 @@ class ContaActivity :
 
     private lateinit var viewModel: ContaViewModel
     var progressBar: AlertDialog? = null
+    lateinit var menuSave: Menu
+    var verificaCEP: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +50,10 @@ class ContaActivity :
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         initDrawerLayoutAndNavigation()
+
+        val email = intent.getStringExtra("email")
+
+        etEmail.setText(email)
     }
 
     override fun onStart() {
@@ -121,9 +127,8 @@ class ContaActivity :
 
         etCEP?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
-                if (etCEP.text.toString().length == 9) {
-                    Utilitarios.limpaErroCampo(etCEP, tiCEP)
-
+                if (etCEP.text.toString().length == 9 &&
+                    verificaCEP) {
                     progressBar = Utilitarios.progressBar(this@ContaActivity)
 
                     CoroutineScope(Dispatchers.IO).launch {
@@ -343,6 +348,7 @@ class ContaActivity :
             tvBairro.text = Utilitarios.consultaString(this, "bairro")
             tvCidade.text = Utilitarios.consultaString(this, "cidade")
             tvEstado.text = Utilitarios.consultaString(this, "estado")
+            tvComplemento.text = Utilitarios.consultaString(this, "complemento")
 
             llCriaConta.visibility = View.GONE
             llConta.visibility = View.VISIBLE
@@ -359,6 +365,14 @@ class ContaActivity :
 
             entrar.visibility = View.GONE
             infos.visibility = View.VISIBLE
+
+            if (tvComplemento.text.isEmpty()) {
+                tvComplemento.visibility = View.GONE
+                tvLabelComplemento.visibility = View.GONE
+            } else {
+                tvComplemento.visibility = View.VISIBLE
+                tvLabelComplemento.visibility = View.VISIBLE
+            }
         }
 
         nav_view.menu.findItem(R.id.nav_conta).isVisible = false
@@ -375,6 +389,8 @@ class ContaActivity :
         if (etTitulo.text == getString(R.string.nova_conta)) {
             menu?.findItem(R.id.itEdit)?.isVisible = false
         }
+
+        menuSave = menu!!
 
         return true
     }
@@ -399,6 +415,40 @@ class ContaActivity :
     ): Boolean {
         return when (item.itemId) {
             R.id.itEdit -> {
+                etNome.setText(tvNome.text)
+                etEmail.setText(tvEmail.text)
+
+                verificaCEP = false
+                etCEP.setText(tvCEP.text)
+                verificaCEP = true
+
+                etBairro.setText(tvBairro.text)
+                etRua.setText(tvRua.text)
+                etNumero.setText(tvNumero.text)
+                etComplemento.setText(etComplemento.text)
+                tvCidEst.text = tvCidade.text.toString() + "/" + tvEstado.text.toString()
+
+                tiSenha.hint = getString(R.string.nova_senha)
+                tiSenhaConfirma.hint = getString(R.string.confirma_nova_senha)
+                etTitulo.text = getString(R.string.editar_conta)
+
+                llConta.visibility = View.GONE
+                llCriaConta.visibility = View.VISIBLE
+                cdCidEst.visibility = View.VISIBLE
+                btExit.visibility = View.GONE
+                btCancela.visibility = View.VISIBLE
+
+                menuSave.findItem(R.id.itEdit)?.isVisible = false
+
+                btCancela.setOnClickListener {
+                    llConta.visibility = View.VISIBLE
+                    llCriaConta.visibility = View.GONE
+                    cdCidEst.visibility = View.GONE
+                    btExit.visibility = View.VISIBLE
+                    btCancela.visibility = View.GONE
+
+                    menuSave.findItem(R.id.itEdit)?.isVisible = true
+                }
 
                 true
             }

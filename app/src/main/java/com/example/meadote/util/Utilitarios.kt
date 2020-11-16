@@ -230,6 +230,7 @@ object Utilitarios {
                 val intent = Intent(context, ContaActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                intent.putExtra("email", emailFB)
 
                 context?.startActivity(intent)
             }
@@ -305,10 +306,6 @@ object Utilitarios {
                     "estado",
                     usuario.estado
                 )
-
-                /*if (main) {
-                    MainActivity().atualizaUsuario()
-                }*/
 
                 Toast.makeText(
                     ctx,
