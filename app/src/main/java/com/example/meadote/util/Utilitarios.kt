@@ -210,6 +210,7 @@ object Utilitarios {
                 progressBar?.dismiss()
 
                 val usu = Usuario(usuarios[0].nome,
+                    usuarios[0].id,
                     usuarios[0].email,
                     usuarios[0].cep,
                     usuarios[0].bairro,
@@ -305,6 +306,12 @@ object Utilitarios {
                     ctx,
                     "estado",
                     usuario.estado
+                )
+
+                salvaString(
+                    ctx,
+                    "id",
+                    usuario.id
                 )
 
                 Toast.makeText(

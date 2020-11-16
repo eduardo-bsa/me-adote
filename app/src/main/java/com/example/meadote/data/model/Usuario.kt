@@ -1,6 +1,7 @@
 package com.example.meadote.data.model
 
 class Usuario (val nome: String,
+               val id: String,
                val email: String,
                val cep: String,
                val bairro: String,
@@ -11,7 +12,7 @@ class Usuario (val nome: String,
                val estado: String,
                val foto: String) {
 
-    constructor() : this ("","", "", "", "", "", "", "", "", "") {
+    constructor() : this ("", "", "", "", "", "", "", "", "", "", "") {
 
     }
 

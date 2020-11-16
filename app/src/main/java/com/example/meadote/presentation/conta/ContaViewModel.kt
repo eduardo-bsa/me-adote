@@ -2,6 +2,7 @@ package com.example.meadote.presentation.conta
 
 import android.app.Activity
 import android.content.Context
+import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -19,6 +20,7 @@ import kotlinx.coroutines.*
 class ContaViewModel(private val cepRepo: CEPRepository) : ViewModel() {
     val cepLiveData = MutableLiveData<List<Endereco>>()
     val criaUserLiveData = MutableLiveData<Boolean>()
+    val alteraUserLiveData = MutableLiveData<Boolean>()
 
     private lateinit var auth: FirebaseAuth
     private lateinit var ref: DatabaseReference
@@ -39,9 +41,7 @@ class ContaViewModel(private val cepRepo: CEPRepository) : ViewModel() {
                 .addOnCompleteListener(ctx as Activity) { task ->
                     if (task.isSuccessful) {
                         ref = FirebaseDatabase.getInstance().getReference("usuario")
-                        val userId = ref.push().key
-                        ref.child(userId!!).setValue(usuario).addOnCompleteListener {
-                            criaUserLiveData.value = true
+                        ref.child(usuario.id).setValue(usuario).addOnCompleteListener {
 
                             Utilitarios.salvaString(
                                 ctx,
@@ -102,12 +102,87 @@ class ContaViewModel(private val cepRepo: CEPRepository) : ViewModel() {
                                 "estado",
                                 usuario.estado
                             )
+
+                            Utilitarios.salvaString(
+                                ctx,
+                                "id",
+                                usuario.id
+                            )
+
+                            criaUserLiveData.value = true
                         }
                     } else {
                         criaUserLiveData.value = false
                     }
                 }
         }
+    }
+
+    fun alteraUsuario(usuario: Usuario, ctx: Context) {
+        val dbUsuario = FirebaseDatabase.getInstance().getReference("usuario")
+        dbUsuario.child(usuario.id).setValue(usuario)
+
+        Utilitarios.salvaString(
+            ctx,
+            "nome",
+            usuario.nome
+        )
+
+        Utilitarios.salvaString(
+            ctx,
+            "email",
+            usuario.email
+        )
+
+        Utilitarios.salvaString(
+            ctx,
+            "cep",
+            usuario.cep
+        )
+
+        Utilitarios.salvaString(
+            ctx,
+            "bairro",
+            usuario.bairro
+        )
+
+        Utilitarios.salvaString(
+            ctx,
+            "rua",
+            usuario.rua
+        )
+
+        Utilitarios.salvaString(
+            ctx,
+            "numero",
+            usuario.numero
+        )
+
+        Utilitarios.salvaString(
+            ctx,
+            "complemento",
+            usuario.complemento
+        )
+
+        Utilitarios.salvaString(
+            ctx,
+            "foto",
+            usuario.foto
+        )
+
+        Utilitarios.salvaString(
+            ctx,
+            "cidade",
+            usuario.cidade
+        )
+
+        Utilitarios.salvaString(
+            ctx,
+            "estado",
+            usuario.estado
+        )
+
+        alteraUserLiveData.value = true
     }
 
     class ContaViewModelFactory(private val cepRepo: CEPRepository) : ViewModelProvider.Factory {

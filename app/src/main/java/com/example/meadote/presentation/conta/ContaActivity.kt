@@ -26,6 +26,8 @@ import com.example.meadote.util.Utilitarios
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_conta.*
 import kotlinx.android.synthetic.main.activity_main.drawer_layout
 import kotlinx.android.synthetic.main.activity_main.nav_view
@@ -42,6 +44,7 @@ class ContaActivity :
     var progressBar: AlertDialog? = null
     lateinit var menuSave: Menu
     var verificaCEP: Boolean = true
+    private lateinit var ref: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,9 +95,21 @@ class ContaActivity :
             if (complete) {
                 Toast.makeText(this, getString(R.string.usuario_criado), Toast.LENGTH_SHORT).show()
 
-                updateUi()
+                updateUi("main")
             } else {
                 Toast.makeText(this, getString(R.string.login_erro), Toast.LENGTH_SHORT).show()
+            }
+        })
+
+        viewModel.alteraUserLiveData.observe(this, Observer { complete ->
+            progressBar!!.dismiss()
+
+            if (complete) {
+                Toast.makeText(this, getString(R.string.salva_altera), Toast.LENGTH_SHORT).show()
+
+                updateUi("conta")
+            } else {
+                Toast.makeText(this, getString(R.string.erro_altera), Toast.LENGTH_SHORT).show()
             }
         })
 
@@ -187,11 +202,13 @@ class ContaActivity :
                 campoSalva(etNome, tiNome) -> erro = true
                 campoSalva(etRua, tiRua) -> erro = true
                 campoSalva(etNumero, tiNumero) -> erro = true
-                campoSalva(etSenha, tiSenha) -> erro = true
+                campoSalva(etSenha, tiSenha) &&
+                        etTitulo.text == getString(R.string.nova_conta) -> erro = true
                 campoSalva(etCEP, tiCEP) -> erro = true
                 campoSalva(etBairro, tiBairro) -> erro = true
                 campoSalva(etEmail, tiEmail) -> erro = true
-                campoSalva(etSenhaConfirma, tiSenhaConfirma) -> erro = true
+                campoSalva(etSenhaConfirma, tiSenhaConfirma) &&
+                        etTitulo.text == getString(R.string.nova_conta) -> erro = true
             }
 
             if (!etEmail.text.toString().contains("@") ||
@@ -222,28 +239,80 @@ class ContaActivity :
             if (!erro) {
                 progressBar = Utilitarios.progressBar(this@ContaActivity)
 
-                val usuario = Usuario(etNome.text.toString(),
-                    etEmail.text.toString(),
-                    etCEP.text.toString(),
-                    etBairro.text.toString(),
-                    etRua.text.toString(),
-                    etNumero.text.toString(),
-                    etComplemento.text.toString(),
-                    tvCidEst.text.toString().substringBefore("/"),
-                    tvCidEst.text.toString().substringAfter("/"),
-                "")
+                if (etTitulo.text == getString(R.string.nova_conta)) {
+                    ref = FirebaseDatabase.getInstance().getReference("usuario")
+                    val userId = ref.push().key
 
-                viewModel.criaUsuario(usuario, this, etSenha.text.toString())
+                    val usuario = Usuario(etNome.text.toString(),
+                        userId.toString(),
+                        etEmail.text.toString(),
+                        etCEP.text.toString(),
+                        etBairro.text.toString(),
+                        etRua.text.toString(),
+                        etNumero.text.toString(),
+                        etComplemento.text.toString(),
+                        tvCidEst.text.toString().substringBefore("/"),
+                        tvCidEst.text.toString().substringAfter("/"),
+                        "")
+
+                    viewModel.criaUsuario(usuario, this, etSenha.text.toString())
+                } else {
+                    val usuario = Usuario(etNome.text.toString(),
+                        Utilitarios.consultaString(this, "id").toString(),
+                        etEmail.text.toString(),
+                        etCEP.text.toString(),
+                        etBairro.text.toString(),
+                        etRua.text.toString(),
+                        etNumero.text.toString(),
+                        etComplemento.text.toString(),
+                        tvCidEst.text.toString().substringBefore("/"),
+                        tvCidEst.text.toString().substringAfter("/"),
+                        "")
+
+                    viewModel.alteraUsuario(usuario, this)
+                }
             }
         }
     }
 
-    private fun updateUi() {
-        val intent = Intent(this, MainActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+    private fun updateUi(activity: String) {
+        if (activity == "main") {
+            val intent = Intent(this, MainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
 
-        startActivity(intent)
+            startActivity(intent)
+        } else {
+            tvNome.text = etNome.text.toString()
+            tvEmail.text = etEmail.text.toString()
+            tvCEP.text = etCEP.text.toString()
+            tvBairro.text = etBairro.text.toString()
+            tvRua.text = etRua.text.toString()
+            tvNumero.text = etNumero.text.toString()
+            tvComplemento.text = etComplemento.text.toString()
+            tvCidade.text = tvCidEst.text.toString().substringBefore("/")
+            tvEstado.text = tvCidEst.text.toString().substringAfter("/")
+
+            etTitulo.text = getString(R.string.conta)
+            tiSenha.hint = getString(R.string.senha)
+            tiSenhaConfirma.hint = getString(R.string.confirma_conta)
+
+            if (tvComplemento.text.isEmpty()) {
+                tvComplemento.visibility = View.GONE
+                tvLabelComplemento.visibility = View.GONE
+            } else {
+                tvComplemento.visibility = View.VISIBLE
+                tvLabelComplemento.visibility = View.VISIBLE
+            }
+
+            llConta.visibility = View.VISIBLE
+            llCriaConta.visibility = View.GONE
+            cdCidEst.visibility = View.GONE
+            btExit.visibility = View.VISIBLE
+            btCancela.visibility = View.GONE
+
+            menuSave.findItem(R.id.itEdit)?.isVisible = true
+        }
     }
 
     private fun cepMascara() {
@@ -415,6 +484,9 @@ class ContaActivity :
     ): Boolean {
         return when (item.itemId) {
             R.id.itEdit -> {
+                tiSenha.error = null
+                tiSenhaConfirma.error = null
+
                 etNome.setText(tvNome.text)
                 etEmail.setText(tvEmail.text)
 
@@ -425,7 +497,7 @@ class ContaActivity :
                 etBairro.setText(tvBairro.text)
                 etRua.setText(tvRua.text)
                 etNumero.setText(tvNumero.text)
-                etComplemento.setText(etComplemento.text)
+                etComplemento.setText(tvComplemento.text)
                 tvCidEst.text = tvCidade.text.toString() + "/" + tvEstado.text.toString()
 
                 tiSenha.hint = getString(R.string.nova_senha)
@@ -441,6 +513,10 @@ class ContaActivity :
                 menuSave.findItem(R.id.itEdit)?.isVisible = false
 
                 btCancela.setOnClickListener {
+                    etTitulo.text = getString(R.string.conta)
+                    tiSenha.hint = getString(R.string.senha)
+                    tiSenhaConfirma.hint = getString(R.string.confirma_conta)
+
                     llConta.visibility = View.VISIBLE
                     llCriaConta.visibility = View.GONE
                     cdCidEst.visibility = View.GONE
