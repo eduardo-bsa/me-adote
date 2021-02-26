@@ -45,10 +45,13 @@ class ContaActivity :
     lateinit var menuSave: Menu
     var verificaCEP: Boolean = true
     private lateinit var ref: DatabaseReference
+    lateinit var ctx: Context
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_conta)
+
+        ctx = this
 
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -372,6 +375,14 @@ class ContaActivity :
             R.string.navigation_drawer_close
         )
 
+        nav_view.setNavigationItemSelectedListener(this)
+        val headerLayout = nav_view.getHeaderView(0)
+        val entrar = headerLayout.findViewById<Button>(R.id.btEntrar)
+        val nome = headerLayout.findViewById<TextView>(R.id.tvNome)
+        val infos = headerLayout.findViewById<LinearLayout>(R.id.liInfoConta)
+        val email = headerLayout.findViewById<TextView>(R.id.tvEmail)
+        val endereco = headerLayout.findViewById<TextView>(R.id.tvEndereco)
+
         drawer_layout.addDrawerListener(object : DrawerListener {
             override fun onDrawerSlide(drawerView: View, slideOffset: Float) {}
 
@@ -380,6 +391,27 @@ class ContaActivity :
                     getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
                 inputMethodManager.hideSoftInputFromWindow(drawerView.windowToken, 0)
+
+                if (Utilitarios.consultaString(ctx, "email")!!.isEmpty()) {
+                    entrar.visibility = View.VISIBLE
+
+                    entrar.setOnClickListener {
+                        drawer_layout.closeDrawer(GravityCompat.START)
+                        Utilitarios.login(ctx)
+                    }
+                } else {
+                    nome.text = Utilitarios.consultaString(ctx, "nome")
+                    email.text = Utilitarios.consultaString(ctx, "email")
+
+                    val end = Utilitarios.consultaString(ctx, "rua") +
+                            ", " +
+                            Utilitarios.consultaString(ctx, "numero")
+
+                    endereco.text = end
+
+                    entrar.visibility = View.GONE
+                    infos.visibility = View.VISIBLE
+                }
             }
 
             override fun onDrawerClosed(drawerView: View) {}
@@ -389,22 +421,7 @@ class ContaActivity :
 
         toggle.syncState()
 
-        nav_view.setNavigationItemSelectedListener(this)
-        val headerLayout = nav_view.getHeaderView(0)
-        val entrar = headerLayout.findViewById<Button>(R.id.btEntrar)
-        val nome = headerLayout.findViewById<TextView>(R.id.tvNome)
-        val infos = headerLayout.findViewById<LinearLayout>(R.id.liInfoConta)
-        val email = headerLayout.findViewById<TextView>(R.id.tvEmail)
-        val endereco = headerLayout.findViewById<TextView>(R.id.tvEndereco)
-
         if (Utilitarios.consultaString(this, "email")!!.isEmpty()) {
-            entrar.visibility = View.VISIBLE
-
-            entrar.setOnClickListener {
-                drawer_layout.closeDrawer(GravityCompat.START)
-                Utilitarios.login(this)
-            }
-
             etTitulo.text = getString(R.string.nova_conta)
         } else {
             etTitulo.text = getString(R.string.conta)
@@ -422,18 +439,6 @@ class ContaActivity :
             llCriaConta.visibility = View.GONE
             llConta.visibility = View.VISIBLE
             btExit.visibility = View.VISIBLE
-
-            nome.text = Utilitarios.consultaString(this, "nome")
-            email.text = Utilitarios.consultaString(this, "email")
-
-            val end = Utilitarios.consultaString(this, "rua") +
-                    ", " +
-                    Utilitarios.consultaString(this, "numero")
-
-            endereco.text = end
-
-            entrar.visibility = View.GONE
-            infos.visibility = View.VISIBLE
 
             if (tvComplemento.text.isEmpty()) {
                 tvComplemento.visibility = View.GONE
