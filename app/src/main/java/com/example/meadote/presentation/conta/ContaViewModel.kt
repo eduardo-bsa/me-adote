@@ -2,6 +2,7 @@ package com.example.meadote.presentation.conta
 
 import android.app.Activity
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,6 +12,7 @@ import com.example.meadote.data.model.Usuario
 import com.example.meadote.data.repository.CEPRepository
 import com.example.meadote.util.Utilitarios
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -118,71 +120,85 @@ class ContaViewModel(private val cepRepo: CEPRepository) : ViewModel() {
         }
     }
 
-    fun alteraUsuario(usuario: Usuario, ctx: Context) {
+    fun alteraUsuario(usuario: Usuario, ctx: Context, senha: String) {
         val dbUsuario = FirebaseDatabase.getInstance().getReference("usuario")
-        dbUsuario.child(usuario.id).setValue(usuario)
+        dbUsuario.child(usuario.id).setValue(usuario).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Utilitarios.salvaString(
+                    ctx,
+                    "nome",
+                    usuario.nome
+                )
 
-        Utilitarios.salvaString(
-            ctx,
-            "nome",
-            usuario.nome
-        )
+                Utilitarios.salvaString(
+                    ctx,
+                    "email",
+                    usuario.email
+                )
 
-        Utilitarios.salvaString(
-            ctx,
-            "email",
-            usuario.email
-        )
+                Utilitarios.salvaString(
+                    ctx,
+                    "cep",
+                    usuario.cep
+                )
 
-        Utilitarios.salvaString(
-            ctx,
-            "cep",
-            usuario.cep
-        )
+                Utilitarios.salvaString(
+                    ctx,
+                    "bairro",
+                    usuario.bairro
+                )
 
-        Utilitarios.salvaString(
-            ctx,
-            "bairro",
-            usuario.bairro
-        )
+                Utilitarios.salvaString(
+                    ctx,
+                    "rua",
+                    usuario.rua
+                )
 
-        Utilitarios.salvaString(
-            ctx,
-            "rua",
-            usuario.rua
-        )
+                Utilitarios.salvaString(
+                    ctx,
+                    "numero",
+                    usuario.numero
+                )
 
-        Utilitarios.salvaString(
-            ctx,
-            "numero",
-            usuario.numero
-        )
+                Utilitarios.salvaString(
+                    ctx,
+                    "complemento",
+                    usuario.complemento
+                )
 
-        Utilitarios.salvaString(
-            ctx,
-            "complemento",
-            usuario.complemento
-        )
+                Utilitarios.salvaString(
+                    ctx,
+                    "foto",
+                    usuario.foto
+                )
 
-        Utilitarios.salvaString(
-            ctx,
-            "foto",
-            usuario.foto
-        )
+                Utilitarios.salvaString(
+                    ctx,
+                    "cidade",
+                    usuario.cidade
+                )
 
-        Utilitarios.salvaString(
-            ctx,
-            "cidade",
-            usuario.cidade
-        )
+                Utilitarios.salvaString(
+                    ctx,
+                    "estado",
+                    usuario.estado
+                )
 
-        Utilitarios.salvaString(
-            ctx,
-            "estado",
-            usuario.estado
-        )
+                if (senha.isNotEmpty()) {
+                    var firebaseUser: FirebaseUser? = null
+                    auth = Firebase.auth
+                    firebaseUser = auth.currentUser
 
-        alteraUserLiveData.value = true
+                    firebaseUser!!.updatePassword(senha).addOnCompleteListener { task ->
+                        alteraUserLiveData.value = task.isSuccessful
+                    }
+                } else {
+                    alteraUserLiveData.value = true
+                }
+            } else {
+                alteraUserLiveData.value = false
+            }
+        }
     }
 
     class ContaViewModelFactory(private val cepRepo: CEPRepository) : ViewModelProvider.Factory {

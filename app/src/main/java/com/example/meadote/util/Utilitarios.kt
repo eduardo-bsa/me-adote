@@ -1,5 +1,6 @@
 package com.example.meadote.util
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
@@ -26,6 +27,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.ktx.Firebase
 
+@SuppressLint("StaticFieldLeak")
 object Utilitarios {
 
     private lateinit var auth: FirebaseAuth

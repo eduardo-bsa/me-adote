@@ -126,7 +126,6 @@ class ContaActivity :
         Utilitarios.validaCampo(this, etNome, tiNome)
         Utilitarios.validaCampo(this, etRua, tiRua)
         Utilitarios.validaCampo(this, etNumero, tiNumero)
-        Utilitarios.validaCampo(this, etSenha, tiSenha)
         Utilitarios.validaCampo(this, etBairro, tiBairro)
 
         etEmail.onFocusChangeListener =
@@ -181,18 +180,35 @@ class ContaActivity :
                 }
             }
 
-        etSenhaConfirma.onFocusChangeListener =
-            View.OnFocusChangeListener { v, hasFocus ->
-                if (!hasFocus) {
-                    Utilitarios.limpaErroCampo(etSenhaConfirma, tiSenhaConfirma)
+        if (etTitulo.text == getString(R.string.nova_conta)) {
+            Utilitarios.validaCampo(this, etSenha, tiSenha)
 
-                    if (etSenhaConfirma.text.toString().isEmpty()) {
-                        tiSenhaConfirma?.error = getString(R.string.campo_obrigatorio)
-                    } else if (etSenhaConfirma.text.toString() != etSenha.text.toString()) {
-                        tiSenhaConfirma?.error = getString(R.string.senha_erro_confirma)
+            etSenhaConfirma.onFocusChangeListener =
+                View.OnFocusChangeListener { v, hasFocus ->
+                    if (!hasFocus) {
+                        Utilitarios.limpaErroCampo(etSenhaConfirma, tiSenhaConfirma)
+
+                        if (etSenhaConfirma.text.toString().isEmpty()) {
+                            tiSenhaConfirma?.error = getString(R.string.campo_obrigatorio)
+                        } else if (etSenhaConfirma.text.toString() != etSenha.text.toString()) {
+                            tiSenhaConfirma?.error = getString(R.string.senha_erro_confirma)
+                        }
                     }
                 }
-            }
+        } else if (etTitulo.text != getString(R.string.nova_conta) && etSenha.text!!.isNotEmpty()) {
+            etSenhaConfirma.onFocusChangeListener =
+                View.OnFocusChangeListener { v, hasFocus ->
+                    if (!hasFocus) {
+                        Utilitarios.limpaErroCampo(etSenhaConfirma, tiSenhaConfirma)
+
+                        if (etSenhaConfirma.text.toString().isEmpty()) {
+                            tiSenhaConfirma?.error = getString(R.string.campo_obrigatorio)
+                        } else if (etSenhaConfirma.text.toString() != etSenha.text.toString()) {
+                            tiSenhaConfirma?.error = getString(R.string.senha_erro_confirma)
+                        }
+                    }
+                }
+        }
 
         cepMascara()
     }
@@ -205,13 +221,16 @@ class ContaActivity :
                 campoSalva(etNome, tiNome) -> erro = true
                 campoSalva(etRua, tiRua) -> erro = true
                 campoSalva(etNumero, tiNumero) -> erro = true
-                campoSalva(etSenha, tiSenha) &&
-                        etTitulo.text == getString(R.string.nova_conta) -> erro = true
                 campoSalva(etCEP, tiCEP) -> erro = true
                 campoSalva(etBairro, tiBairro) -> erro = true
                 campoSalva(etEmail, tiEmail) -> erro = true
-                campoSalva(etSenhaConfirma, tiSenhaConfirma) &&
-                        etTitulo.text == getString(R.string.nova_conta) -> erro = true
+            }
+
+            if (etTitulo.text == getString(R.string.nova_conta)) {
+                when {
+                    campoSalva(etSenha, tiSenha) -> erro = true
+                    campoSalva(etSenhaConfirma, tiSenhaConfirma) -> erro = true
+                }
             }
 
             if (!etEmail.text.toString().contains("@") ||
@@ -272,7 +291,7 @@ class ContaActivity :
                         tvCidEst.text.toString().substringAfter("/"),
                         "")
 
-                    viewModel.alteraUsuario(usuario, this)
+                    viewModel.alteraUsuario(usuario, this, etSenha.text.toString())
                 }
             }
         }
