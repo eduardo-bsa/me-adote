@@ -16,12 +16,15 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.example.meadote.R
 import com.example.meadote.presentation.conta.ContaActivity
+import com.example.meadote.util.Login
 import com.example.meadote.util.Utilitarios
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.dialog_busca.view.*
+import kotlinx.android.synthetic.main.nav_header_main.view.*
 import org.w3c.dom.Text
 
 class MainActivity :
@@ -51,9 +54,9 @@ class MainActivity :
         val inflater = LayoutInflater.from(this)
         val view = inflater.inflate(R.layout.dialog_busca, null)
 
-        val pesquisa = view.findViewById<EditText>(R.id.etPesquisa)
-        val back = view.findViewById<ImageView>(R.id.ivBack)
-        val close = view.findViewById<ImageView>(R.id.ivClose)
+        val pesquisa = view.etPesquisa
+        val back = view.ivBack
+        val close = view.ivClose
 
         if (etPesquisa.text.toString().isNotEmpty()) {
             close.visibility = View.VISIBLE
@@ -123,11 +126,11 @@ class MainActivity :
 
         nav_view.setNavigationItemSelectedListener(this)
         val headerLayout = nav_view.getHeaderView(0)
-        val entrar = headerLayout.findViewById<Button>(R.id.btEntrar)
-        val nome = headerLayout.findViewById<TextView>(R.id.tvNome)
-        val infos = headerLayout.findViewById<LinearLayout>(R.id.liInfoConta)
-        val email = headerLayout.findViewById<TextView>(R.id.tvEmail)
-        val endereco = headerLayout.findViewById<TextView>(R.id.tvEndereco)
+        val entrar = headerLayout.btEntrar
+        val nome = headerLayout.tvNome
+        val infos = headerLayout.liInfoConta
+        val email = headerLayout.tvEmail
+        val endereco = headerLayout.tvEndereco
 
         drawer_layout.addDrawerListener(object : DrawerLayout.DrawerListener {
             override fun onDrawerSlide(drawerView: View, slideOffset: Float) {}
@@ -160,7 +163,7 @@ class MainActivity :
 
         entrar.setOnClickListener {
             drawer_layout.closeDrawer(GravityCompat.START)
-            Utilitarios.login(this)
+            Login.doLogin(this)
         }
 
         nav_view.menu.findItem(R.id.nav_home).isVisible = false

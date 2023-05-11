@@ -6,7 +6,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -22,6 +21,7 @@ import com.example.meadote.R
 import com.example.meadote.data.model.Usuario
 import com.example.meadote.data.repository.CEPRepository
 import com.example.meadote.presentation.main.MainActivity
+import com.example.meadote.util.Login
 import com.example.meadote.util.Utilitarios
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.textfield.TextInputLayout
@@ -33,6 +33,9 @@ import kotlinx.android.synthetic.main.activity_main.drawer_layout
 import kotlinx.android.synthetic.main.activity_main.nav_view
 import kotlinx.android.synthetic.main.activity_main.toolbar
 import kotlinx.android.synthetic.main.content_conta.*
+import kotlinx.android.synthetic.main.content_conta.tvEmail
+import kotlinx.android.synthetic.main.content_conta.tvNome
+import kotlinx.android.synthetic.main.nav_header_main.*
 import kotlinx.coroutines.*
 
 
@@ -64,6 +67,11 @@ class ContaActivity :
 
     override fun onStart() {
         super.onStart()
+
+        validaCampos()
+        salva()
+
+        btExit.setOnClickListener { sair() }
 
         viewModel = ViewModelProvider(
             this,
@@ -115,11 +123,6 @@ class ContaActivity :
                 Toast.makeText(this, getString(R.string.erro_altera), Toast.LENGTH_SHORT).show()
             }
         })
-
-        btExit.setOnClickListener { sair() }
-
-        validaCampos()
-        salva()
     }
 
     private fun validaCampos() {
@@ -395,12 +398,6 @@ class ContaActivity :
         )
 
         nav_view.setNavigationItemSelectedListener(this)
-        val headerLayout = nav_view.getHeaderView(0)
-        val entrar = headerLayout.findViewById<Button>(R.id.btEntrar)
-        val nome = headerLayout.findViewById<TextView>(R.id.tvNome)
-        val infos = headerLayout.findViewById<LinearLayout>(R.id.liInfoConta)
-        val email = headerLayout.findViewById<TextView>(R.id.tvEmail)
-        val endereco = headerLayout.findViewById<TextView>(R.id.tvEndereco)
 
         drawer_layout.addDrawerListener(object : DrawerListener {
             override fun onDrawerSlide(drawerView: View, slideOffset: Float) {}
@@ -412,24 +409,24 @@ class ContaActivity :
                 inputMethodManager.hideSoftInputFromWindow(drawerView.windowToken, 0)
 
                 if (Utilitarios.consultaString(ctx, "email")!!.isEmpty()) {
-                    entrar.visibility = View.VISIBLE
+                    btEntrar.visibility = View.VISIBLE
 
-                    entrar.setOnClickListener {
+                    btEntrar.setOnClickListener {
                         drawer_layout.closeDrawer(GravityCompat.START)
-                        Utilitarios.login(ctx)
+                        Login.doLogin(ctx)
                     }
                 } else {
-                    nome.text = Utilitarios.consultaString(ctx, "nome")
-                    email.text = Utilitarios.consultaString(ctx, "email")
+                    tvNome.text = Utilitarios.consultaString(ctx, "nome")
+                    tvEmail.text = Utilitarios.consultaString(ctx, "email")
 
                     val end = Utilitarios.consultaString(ctx, "rua") +
                             ", " +
                             Utilitarios.consultaString(ctx, "numero")
 
-                    endereco.text = end
+                    tvEndereco.text = end
 
-                    entrar.visibility = View.GONE
-                    infos.visibility = View.VISIBLE
+                    btEntrar.visibility = View.GONE
+                    liInfoConta.visibility = View.VISIBLE
                 }
             }
 

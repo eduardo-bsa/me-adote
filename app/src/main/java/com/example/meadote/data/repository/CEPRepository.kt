@@ -1,9 +1,6 @@
 package com.example.meadote.data.repository
 
 import com.example.meadote.data.model.Endereco
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.net.HttpURLConnection
