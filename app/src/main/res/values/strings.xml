@@ -79,4 +79,5 @@
     <string name="cancelar">Cancelar</string>
     <string name="salva_altera">As alterações foram salvas</string>
     <string name="erro_altera">Não foi possível salvar as alterações, tente novamente mais tarde</string>
+
 </resources>
